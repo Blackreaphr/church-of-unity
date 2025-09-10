@@ -44,7 +44,13 @@ Setup (once, in GitHub repo → Settings → Secrets and variables → Actions):
 
 What it does:
 - Checks out code, installs deps, runs `npm run build:stamp`.
+- Preflight SFTP check lists `HST_REMOTE_DIR` to validate your secrets.
 - Uploads `dist/` to `HST_REMOTE_DIR` over SFTP, excludes dev files, deletes removed files.
 
 Manual run:
 - GitHub → Actions → Deploy to Hostinger (SFTP) → Run workflow.
+
+Troubleshooting:
+- If the job fails at “Preflight SFTP”, verify the five HST_* secrets. Most common issue is `HST_REMOTE_DIR`.
+- Example Hostinger path: `/home/<user>/domains/thechurchofunity.com/public_html/`
+- You can confirm the exact path in hPanel → Files → File Manager → click `public_html` → Properties.
