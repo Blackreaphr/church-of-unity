@@ -24,6 +24,22 @@ jobs:
       - name: Build (with version stamping)
         run: npm run build:stamp
 
+      - name: Preflight SFTP (check remote dir)
+        shell: bash
+        env:
+          H: ${{ secrets.HST_HOST }}
+          P: ${{ secrets.HST_PORT }}
+          U: ${{ secrets.HST_USER }}
+          W: ${{ secrets.HST_PASS }}
+          R: ${{ secrets.HST_REMOTE_DIR }}
+        run: |
+          set -e
+          echo "Listing remote dir: $R on $H:$P"
+          lftp -u "$U","$W" -p "$P" sftp://"$H" -e "set net:timeout 10; set net:max-retries 2; set sftp:auto-confirm yes; cls -la \"$R\"; bye" || {
+            echo "Preflight failed. Verify HST_* secrets and HST_REMOTE_DIR path." >&2
+            exit 1
+          }
+
       - name: Deploy via SFTP
         uses: pressidium/lftp-mirror-action@v1
         with:
