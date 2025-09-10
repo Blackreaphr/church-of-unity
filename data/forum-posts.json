@@ -1,0 +1,161 @@
+{
+  "posts": [
+    {
+      "title": "Life and Death: Meaning, Return, and Choice",
+      "url": "/forum/life-and-death-questions.html",
+      "date": "2025-09-06",
+      "lastReplyAt": "2025-09-06T12:00:00Z",
+      "starter": "Guide",
+      "category": "Philosophy",
+      "pinned": true,
+      "replies": 0,
+      "tags": ["life", "death", "afterlife", "choice", "return to God", "identity"],
+      "excerpt": "A long-form essay on life and death: Do we end, return to God, or choose our path? What about sin, justice, and hope?"
+    },
+    {
+      "title": "Quiet Trust",
+      "url": "/forum/prayer-reflection-quiet-trust.html",
+      "date": "2025-09-07",
+      "lastReplyAt": "2025-09-07T10:00:00Z",
+      "starter": "Member C",
+      "category": "Prayer & Self-Reflection",
+      "replies": 0,
+      "tags": ["prayer", "trust"],
+      "excerpt": "A short prayer of quiet trust in uncertainty."
+    },
+    {
+      "title": "Light in Darkness",
+      "url": "/forum/prayer-reflection-light-in-darkness.html",
+      "date": "2025-09-07",
+      "lastReplyAt": "2025-09-07T11:00:00Z",
+      "starter": "Member D",
+      "category": "Prayer & Self-Reflection",
+      "replies": 0,
+      "tags": ["reflection", "hope"],
+      "excerpt": "A brief reflection for nights when hope is dim."
+    },
+    {
+      "title": "Welcome to the Forum",
+      "url": "/forum/welcome.html",
+      "date": "2025-01-01",
+      "lastReplyAt": "2025-01-01T12:00:00Z",
+      "starter": "Editor",
+      "category": "Announcements",
+      "pinned": true,
+      "replies": 0,
+      "tags": ["welcome", "unity"],
+      "excerpt": "What this forum is, how to contribute, and how to read generously."
+    },
+    {
+      "title": "On Beginning Philosophy Together",
+      "url": "/forum/on-beginning-philosophy-together.html",
+      "date": "2025-01-02",
+      "lastReplyAt": "2025-01-03T09:30:00Z",
+      "starter": "Guide",
+      "category": "Philosophy",
+      "replies": 4,
+      "tags": ["philosophy", "practice"],
+      "excerpt": "Why clear questions and patient reasons change how we see and live."
+    },
+    {
+      "title": "Chaos and Order: First Reflections",
+      "url": "/forum/chaos-and-order-first-reflections.html",
+      "date": "2025-01-02",
+      "lastReplyAt": "2025-01-04T14:20:00Z",
+      "starter": "Member A",
+      "category": "Theology",
+      "replies": 7,
+      "tags": ["order", "freedom"],
+      "excerpt": "Reading the garden as a meditation on freedom, limits, and mercy."
+    },
+    {
+      "title": "Daily Examen: What Changes With Practice",
+      "url": "/forum/daily-examen-what-changes-with-practice.html",
+      "date": "2024-12-28",
+      "lastReplyAt": "2024-12-30T18:10:00Z",
+      "starter": "Member B",
+      "category": "Practice",
+      "replies": 2,
+      "tags": ["examen", "guide"],
+      "excerpt": "Notes after a week of the examen: what became clearer and why."
+    },
+    {
+      "title": "Community Guidelines",
+      "url": "/forum/guidelines.html",
+      "date": "2025-01-01",
+      "lastReplyAt": "2025-01-01T12:00:00Z",
+      "starter": "Editor",
+      "category": "Guidelines",
+      "pinned": true,
+      "replies": 0,
+      "tags": ["rules", "etiquette"],
+      "excerpt": "How we keep conversation kind and clear."
+    },
+    {
+      "title": "Help & Support",
+      "url": "/forum/help.html",
+      "date": "2025-01-02",
+      "lastReplyAt": "2025-01-02T12:00:00Z",
+      "starter": "Team",
+      "category": "Help & Support",
+      "replies": 0,
+      "tags": ["help", "support"],
+      "excerpt": "Get assistance from the team."
+    },
+    {
+      "title": "Announcements",
+      "url": "/forum/announcements.html",
+      "date": "2025-01-02",
+      "lastReplyAt": "2025-01-02T12:00:00Z",
+      "starter": "Editor",
+      "category": "Announcements",
+      "replies": 0,
+      "tags": ["news", "updates"],
+      "excerpt": "News and updates from the community."
+    },
+    {
+      "title": "Prayer and Reflections",
+      "url": "/forum/prayer-and-reflections.html",
+      "date": "2025-01-03",
+      "lastReplyAt": "2025-01-03T12:00:00Z",
+      "starter": "Editor",
+      "category": "Prayer & Self-Reflection",
+      "replies": 0,
+      "tags": ["prayer", "reflection"],
+      "excerpt": "Short readings, honest prayer, steady practice."
+    },
+    {
+      "title": "Study Guide: Lectio Divina",
+      "url": "/forum/study-guide-lectio-divina.html",
+      "date": "2025-09-07",
+      "lastReplyAt": "2025-09-07T12:00:00Z",
+      "starter": "Guide",
+      "category": "Study Guides",
+      "replies": 0,
+      "tags": ["lectio", "study guide"],
+      "excerpt": "A concise guide to praying Scripture with lectio divina."
+    },
+    {
+      "title": "Study Guide: Daily Examen",
+      "url": "/forum/study-guide-examen.html",
+      "date": "2025-09-07",
+      "lastReplyAt": "2025-09-07T12:00:00Z",
+      "starter": "Guide",
+      "category": "Study Guides",
+      "replies": 0,
+      "tags": ["examen", "study guide"],
+      "excerpt": "A concise guide to the daily examen: gratitude, review, sorrow, hope."
+    },
+    {
+      "title": "Study Guide: Rule of Life",
+      "url": "/forum/study-guide-rule-of-life.html",
+      "date": "2025-09-07",
+      "lastReplyAt": "2025-09-07T12:00:00Z",
+      "starter": "Guide",
+      "category": "Study Guides",
+      "replies": 0,
+      "tags": ["rule of life", "study guide"],
+      "excerpt": "A concise guide to crafting a small, livable rule of life."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "templates": [
+    {
+      "id": "removal",
+      "subject": "Your item was removed",
+      "body": "We removed your item for violating our P1 policy: [category]. You can edit and appeal within 7 days. Reason: [rule]."
+    },
+    {
+      "id": "edit_request",
+      "subject": "Changes required to publish your item",
+      "body": "Your item needs changes to comply with [policy label]. Please remove/modify: [details]. It will remain limited until resolved."
+    },
+    {
+      "id": "age_gate",
+      "subject": "Age warning applied to your item",
+      "body": "Your item is still available with an age warning due to [category]. It’s excluded from feeds and search."
+    },
+    {
+      "id": "limit_distribution",
+      "subject": "Distribution limited",
+      "body": "To reduce potential harm, we limited distribution of your item under [policy label] for [duration] days. It may not appear in feeds or search."
+    },
+    {
+      "id": "warning",
+      "subject": "Policy warning",
+      "body": "We recorded a violation under [policy label]. Further violations may result in suspension."
+    },
+    {
+      "id": "suspension",
+      "subject": "Account suspension",
+      "body": "Your account is suspended until [date] for repeated violations under [category]. You may appeal once."
+    },
+    {
+      "id": "p0_ban",
+      "subject": "Permanent ban for zero‑tolerance violation",
+      "body": "Your content violated a zero‑tolerance rule (P0): [category]. Your account is permanently banned. See our policy for details."
+    }
+  ]
+}
+

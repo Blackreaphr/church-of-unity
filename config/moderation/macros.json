@@ -1,0 +1,86 @@
+{
+  "version": "1.0",
+  "macros": [
+    {
+      "id": "remove",
+      "label": "Remove",
+      "applies_to": ["P1", "P2"],
+      "result_state": "unpublished",
+      "user_notification_template_id": "removal",
+      "audit_fields_required": ["rule_id", "evidence_ref", "notes"],
+      "sla_hours": 24
+    },
+    {
+      "id": "edit_request",
+      "label": "Edit Request",
+      "applies_to": ["P1", "P2"],
+      "result_state": "limited",
+      "user_notification_template_id": "edit_request",
+      "audit_fields_required": ["rule_id", "required_changes"],
+      "auto_close_hours": 72
+    },
+    {
+      "id": "age_gate_blur",
+      "label": "Age‑Gate + Blur",
+      "applies_to": ["P1"],
+      "result_state": "limited",
+      "user_notification_template_id": "age_gate",
+      "audit_fields_required": ["rule_id"]
+    },
+    {
+      "id": "limit_distribution",
+      "label": "Limit Distribution",
+      "applies_to": ["P1", "P2"],
+      "result_state": "limited",
+      "user_notification_template_id": "limit_distribution",
+      "audit_fields_required": ["rule_id", "duration_days"],
+      "default_duration_days": 14
+    },
+    {
+      "id": "warning",
+      "label": "Warning",
+      "applies_to": ["P1", "P2"],
+      "result_state": "publish",
+      "user_notification_template_id": "warning",
+      "audit_fields_required": ["rule_id", "notes"],
+      "demote_trust": true
+    },
+    {
+      "id": "temp_suspend",
+      "label": "Temporary Suspension",
+      "applies_to": ["P1"],
+      "result_state": "blocked",
+      "user_notification_template_id": "suspension",
+      "audit_fields_required": ["rule_id", "suspension_until"],
+      "demote_trust": true
+    },
+    {
+      "id": "perm_ban",
+      "label": "Permanent Ban",
+      "applies_to": ["P0", "P1"],
+      "result_state": "blocked",
+      "user_notification_template_id": "p0_ban",
+      "audit_fields_required": ["rule_id", "evidence_ref"],
+      "requires_lead_approval": true
+    },
+    {
+      "id": "kill_switch",
+      "label": "Kill‑Switch (Topic + Descendants)",
+      "applies_to": ["P0", "P1", "P2"],
+      "result_state": "unpublished",
+      "user_notification_template_id": null,
+      "audit_fields_required": ["reason", "approver"],
+      "requires_lead_approval": true
+    }
+  ],
+  "audit_log_fields": [
+    "rule_id",
+    "reviewer_id",
+    "decision_ts",
+    "user_notified_ts",
+    "evidence_ref",
+    "user_notice_id",
+    "notes"
+  ]
+}
+

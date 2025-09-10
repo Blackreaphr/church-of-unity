@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lectio Divina | Church of Unity</title>
+    <meta name="description" content="Lectio divina on one page: read, meditate, pray, contemplate, resolve. Print-ready." />
+    <meta name="theme-color" content="#0b0c10" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="stylesheet" href="/guides/print.css" media="all" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <script type="module" src="/site/meta.js?v=202509101828"></script>
+    <script type="module" src="/site/search.js"></script>
+  </head>
+  <body>
+    <div class="sheet">
+      <p class="no-print top-actions"><a class="link-back" href="/forum.html">Go back</a><a class="btn-print" href="#" onclick="window.print();return false;">Download PDF</a></p>
+      <h1>Lectio Divina</h1>
+      <p class="meta">Choose a short passage. Move slowly. 10-15 minutes.</p>
+
+      <div class="passage-picker no-print">
+        <div class="picker-row">
+          <label for="lectioCategory">Category</label>
+          <select id="lectioCategory">
+            <option value="all">All</option>
+            <option value="scripture">Scripture</option>
+            <option value="philosophy">Philosophy</option>
+          </select>
+          <button id="prevPick" class="btn">Previous</button>
+          <button id="nextPick" class="btn">Next</button>
+          <button id="randomPick" class="btn">Surprise me</button>
+        </div>
+        <p class="muted">Tip: A new suggestion appears each day. You can also choose a passage you already love.</p>
+      </div>
+
+      <div class="passage-card" id="passageCard" aria-live="polite">
+        <h2 id="passageRef" class="passage-ref"></h2>
+        <blockquote id="passageText" class="passage-text"></blockquote>
+        <p class="muted source-note" id="passageSource"></p>
+      </div>
+      <div class="grid">
+        <div class="box">
+          <h2>1. Read</h2>
+          <p>Read aloud. Mark one word or phrase that stands out.</p>
+        </div>
+        <div class="box">
+          <h2>2. Meditate</h2>
+          <p>Consider what it shows about God and the human heart.</p>
+        </div>
+        <div class="box">
+          <h2>3. Pray</h2>
+          <p>Speak honestly to God. Ask for wisdom and mercy.</p>
+        </div>
+        <div class="box">
+          <h2>4. Contemplate</h2>
+          <p>Rest in silence for a minute or two.</p>
+        </div>
+      </div>
+      <h2>5. Resolve</h2>
+      <p>Name one small act of love for today.</p>
+    </div>
+    <script type="module" src="/guides/lectio.js"></script>
+  </body>
+ </html>

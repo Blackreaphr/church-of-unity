@@ -1,0 +1,51 @@
+{
+  "$id": "https://thechurchofunity.com/schemas/moderation/score-response.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Moderation Score Response",
+  "type": "object",
+  "required": [
+    "item_id",
+    "risk_score",
+    "policy_labels",
+    "label_scores",
+    "rule_hits",
+    "link_risk",
+    "media_flags",
+    "routing"
+  ],
+  "properties": {
+    "item_id": { "type": "string" },
+    "risk_score": { "type": "number", "minimum": 0, "maximum": 100 },
+    "policy_labels": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["P0", "P1", "P2"] }
+    },
+    "label_scores": {
+      "type": "object",
+      "additionalProperties": { "type": "number", "minimum": 0, "maximum": 100 }
+    },
+    "rule_hits": {
+      "type": "object",
+      "properties": {
+        "P0": { "type": "array", "items": { "type": "string" } },
+        "P1": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "link_risk": { "type": "string", "enum": ["low", "medium", "high"] },
+    "media_flags": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["nsfw", "violence", "hash_match", "ocr_sensitive"] }
+    },
+    "routing": {
+      "type": "object",
+      "required": ["state"],
+      "properties": {
+        "state": { "type": "string", "enum": ["publish", "limited", "quarantine", "blocked"] },
+        "reasons": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    }
+  }
+}
+

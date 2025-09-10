@@ -1,0 +1,33 @@
+name: Deploy Cloudflare Worker
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'cloudflare/stats-worker/**'
+      - '.github/workflows/deploy-cloudflare-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set RECOVERY_SECRET (optional)
+        if: ${{ secrets.RECOVERY_SECRET != '' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: cloudflare/stats-worker
+          # Pipe secret to avoid echoing in logs; '-y' skips prompt
+          command: secret put RECOVERY_SECRET --config wrangler.toml --text "${{ secrets.RECOVERY_SECRET }}"
+
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: cloudflare/stats-worker
+          command: deploy --config wrangler.toml
+

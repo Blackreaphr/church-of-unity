@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Start a Topic | Church of Unity</title>
+    <meta name="description" content="Create a new forum topic" />
+    <link rel="icon" href="/assets/symbol.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/site/forum-new.js"></script>
+  </head>
+  <body>
+    <main id="main" class="container" style="max-width: 860px;">
+      <h1>Start a Topic</h1>
+      <p class="muted">Topics may be limited or reviewed before appearing in feeds.</p>
+
+      <form id="newForm" class="form" novalidate>
+        <label>Title
+          <input id="title" type="text" maxlength="180" required placeholder="Clear and descriptive title" />
+        </label>
+        <label>Category (optional)
+          <input id="category" type="text" maxlength="64" placeholder="e.g., philosophy, practice" />
+        </label>
+        <label>Tags (optional)
+          <input id="tags" type="text" maxlength="200" placeholder="Comma-separated tags" />
+        </label>
+        <label>Body
+          <textarea id="body" rows="10" required placeholder="Write your post... (be specific, respectful, and constructive)"></textarea>
+        </label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button id="submitBtn" type="submit" class="ghost">Submit</button>
+          <span id="status" class="muted" aria-live="polite"></span>
+        </div>
+        <div id="result" class="callout" style="margin-top:10px; display:none;"></div>
+      </form>
+    </main>
+  </body>
+</html>
+

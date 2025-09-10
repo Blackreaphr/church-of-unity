@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Topic | Church of Unity</title>
+    <meta name="description" content="Forum topic" />
+    <link rel="icon" href="/assets/symbol.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/site/forum-post.js"></script>
+  </head>
+  <body>
+    <main id="main" class="container" style="max-width: 860px;">
+      <article id="topic" class="topic"></article>
+      <div id="notice" class="muted" style="margin-top:8px;"></div>
+      <section id="replies" class="section" aria-labelledby="replies-heading" style="margin-top:16px;">
+        <h2 id="replies-heading">Replies</h2>
+        <div id="replyList" class="forum-list" role="list"></div>
+        <form id="replyForm" class="form" style="margin-top:12px;">
+          <label>Your Reply
+            <textarea id="replyBody" rows="5" placeholder="Share a thoughtful, kind reply..."></textarea>
+          </label>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="replyBtn" type="submit" class="ghost">Post Reply</button>
+            <span id="replyStatus" class="muted" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

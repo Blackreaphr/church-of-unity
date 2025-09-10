@@ -1,0 +1,62 @@
+{
+  "$id": "https://thechurchofunity.com/schemas/moderation/score-request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Moderation Score Request",
+  "type": "object",
+  "required": ["item_id", "user_id", "content_type", "user_context"],
+  "properties": {
+    "item_id": { "type": "string" },
+    "user_id": { "type": "string" },
+    "content_type": { "type": "string", "enum": ["topic", "post", "comment"] },
+    "text": { "type": "string", "maxLength": 50000 },
+    "links": {
+      "type": "array",
+      "maxItems": 50,
+      "items": { "type": "string", "format": "uri" }
+    },
+    "media": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": ["mime", "size_bytes"],
+        "properties": {
+          "mime": { "type": "string" },
+          "size_bytes": { "type": "integer", "minimum": 0 },
+          "hash": { "type": "string" },
+          "alt_text": { "type": "string" }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "maxItems": 10,
+      "items": { "type": "string" }
+    },
+    "user_context": {
+      "type": "object",
+      "required": ["trust_tier", "prior_actions", "report_score", "velocity"],
+      "properties": {
+        "trust_tier": { "type": "string", "enum": ["T0", "T1", "T2"] },
+        "prior_actions": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["warning", "temp_suspend", "perm_ban", "none"] }
+        },
+        "report_score": { "type": "number", "minimum": 0 },
+        "velocity": {
+          "type": "object",
+          "properties": {
+            "posts_last_hour": { "type": "integer", "minimum": 0 },
+            "links_last_day": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    }
+  },
+  "anyOf": [
+    { "required": ["text"], "properties": { "text": { "minLength": 1 } } },
+    { "required": ["links"], "properties": { "links": { "minItems": 1 } } },
+    { "required": ["media"], "properties": { "media": { "minItems": 1 } } }
+  ]
+}
+

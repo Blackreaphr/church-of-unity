@@ -1,0 +1,42 @@
+name = "unity-stats"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+# === Deployment Checklist ===
+# 1) Login:           wrangler login
+# 2) Account ID:      wrangler whoami  -> copy account_id below
+# 3) KV namespaces:   wrangler kv:namespace create STATS
+#                     wrangler kv:namespace create STATS --preview
+#                     -> copy id and preview_id below
+# 4) Test on workers.dev: keep workers_dev = true, then: wrangler deploy
+# 5) Route your domain (optional, fixes /api/stats 404 on your site):
+#    - Add your domain to Cloudflare DNS (thechurchofunity.com)
+#    - Uncomment the routes[] block below and deploy again
+
+# Replace with your Cloudflare Account ID (wrangler whoami)
+account_id = "b3c7aeb83d969fcbe90926e2795f21c9"  # Cloudflare account id
+
+# EITHER deploy under workers.dev (no domain required):
+workers_dev = true  # keep true for testing under workers.dev
+
+# OR route under your own domain (enable this after adding your zone to Cloudflare DNS):
+routes = [
+  { pattern = "thechurchofunity.com/api/stats*", zone_name = "thechurchofunity.com" },
+  { pattern = "thechurchofunity.com/api/moderation*", zone_name = "thechurchofunity.com" },
+  { pattern = "thechurchofunity.com/api/forum*", zone_name = "thechurchofunity.com" },
+  { pattern = "thechurchofunity.com/*", zone_name = "thechurchofunity.com" },
+  { pattern = "www.thechurchofunity.com/api/stats*", zone_name = "thechurchofunity.com" },
+  { pattern = "www.thechurchofunity.com/api/moderation*", zone_name = "thechurchofunity.com" },
+  { pattern = "www.thechurchofunity.com/api/forum*", zone_name = "thechurchofunity.com" },
+  { pattern = "www.thechurchofunity.com/*", zone_name = "thechurchofunity.com" }
+]
+
+[[kv_namespaces]]
+binding = "STATS"
+id = "4c521e97e77e439c90ea29aba8034453"               # KV id (prod)
+preview_id = "4c521e97e77e439c90ea29aba8034453"        # Using same for preview; optional to create a separate preview namespace
+
+# Secrets/vars
+# DO NOT commit secrets. Set at deploy time:
+#   wrangler secret put RECOVERY_SECRET
+# Used to HMAC recovery codes so nothing sensitive is stored in KV.

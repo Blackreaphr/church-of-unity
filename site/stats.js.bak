@@ -1,0 +1,142 @@
+// Lightweight live counters for views and members
+// Single source of truth via <meta name="stats-endpoint">; no third-party fallbacks
+
+// Lazy endpoint resolution (after DOM is ready)
+// Prefer centralized config (window.SITE_META.statsEndpoint), then per-page meta tag, then default
+const DEFAULT_EP = 'https://thechurchofunity.com/api/stats';
+let STATS_ENDPOINT = DEFAULT_EP;
+function resolveStatsEndpoint() {
+  const cfg = (window.SITE_META && window.SITE_META.statsEndpoint) || null;
+  const tag = document.querySelector('meta[name="stats-endpoint"]');
+  STATS_ENDPOINT = (cfg || tag?.content || DEFAULT_EP).replace(/\/\/+$/, '');
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', resolveStatsEndpoint);
+} else {
+  resolveStatsEndpoint();
+}
+
+// normalized namespace used everywhere
+const NS = location.hostname.toLowerCase().replace(/^www\./, '');
+
+// helper
+const api = (path) =>
+  fetch(`${STATS_ENDPOINT}/${path}`, { credentials: 'omit' })
+    .then(r => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))));
+
+// endpoints that set/read cookies (same-origin in prod)
+const apiAuth = (path) =>
+  fetch(`${STATS_ENDPOINT}/${path}`, { credentials: 'include' })
+    .then(r => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))));
+
+// rendering helpers (adapt selectors if needed)
+const setMembers = (n) => document
+  .querySelectorAll('#memberCount,[data-members]')
+  .forEach((el) => { el.textContent = String(n); });
+const setViews = (n) => document
+  .querySelectorAll('#viewCount,[data-views]')
+  .forEach((el) => {
+    el.textContent = String(n);
+    // Hide any "+" suffix element once live value is shown
+    try {
+      const suffix = el.parentElement && el.parentElement.querySelector('.stat-suffix');
+      if (suffix) suffix.style.display = 'none';
+    } catch {}
+  });
+
+// calls
+async function syncMembers() {
+  const { value } = await api(`get/${encodeURIComponent(NS)}/members`);
+  const cached = Number(localStorage.getItem('co:members') || 0);
+  const v = Math.max(cached, Number(value) || 0);
+  setMembers(v);
+  try { localStorage.setItem('co:members', String(v)); } catch {}
+}
+async function joinOnce() {
+  // idempotent join; server dedupes per device via cookie
+  const { value } = await apiAuth(`join/${encodeURIComponent(NS)}`);
+  setMembers(value);
+  try { localStorage.setItem('co:members', String(Number(value) || 0)); } catch {}
+}
+async function bumpViewsOncePerSession() {
+  const key = 'co:viewed';
+  const path = sessionStorage.getItem(key)
+    ? `get/${encodeURIComponent(NS)}/site-views`
+    : `hit/${encodeURIComponent(NS)}/site-views`;
+  const { value } = await api(path);
+  setViews(value);
+  sessionStorage.setItem(key, '1');
+}
+
+function run() {
+  // ensure endpoint ready before first call
+  resolveStatsEndpoint();
+  // fire-and-forget; surface errors to console for diagnosis
+  bumpViewsOncePerSession().catch((e) => console.warn('views update failed:', e));
+  // Request persistent storage to reduce eviction on mobile (best effort)
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch {}
+  // Seed UI from last known value to avoid lag on eventual consistency
+  try {
+    const cachedMembers = Number(localStorage.getItem('co:members') || 0);
+    if (cachedMembers > 0) setMembers(cachedMembers);
+  } catch {}
+  syncMembers().catch((e) => console.warn('members update failed:', e));
+  const btn = document.getElementById('joinBtn');
+  const restoreBtn = document.getElementById('restoreBtn');
+  if (btn) {
+    const joinedKey = 'co:joined';
+    const setJoinedUI = (joined) => {
+      if (!btn) return;
+      if (joined) {
+        btn.textContent = 'Joined(Member)';
+        btn.setAttribute('aria-label', 'Joined(Member)');
+        btn.classList.add('joined');
+        btn.disabled = true;
+        if (restoreBtn) restoreBtn.style.display = 'none';
+      } else {
+        btn.textContent = 'Join Unity';
+        btn.setAttribute('aria-label', 'Join Unity');
+        btn.classList.remove('joined');
+        btn.disabled = false;
+        if (restoreBtn) restoreBtn.style.display = '';
+      }
+    };
+    // Initialize UI from local state
+    setJoinedUI(!!localStorage.getItem(joinedKey));
+    // Try to restore from server-side cookie if local state missing
+    if (!localStorage.getItem(joinedKey)) {
+      apiAuth(`me/${encodeURIComponent(NS)}`).then(({ joined }) => {
+        if (joined) { try { localStorage.setItem(joinedKey, '1'); } catch {}; setJoinedUI(true); }
+      }).catch(() => {});
+    }
+    // Optional: allow manual restore without incrementing count
+    if (restoreBtn) {
+      restoreBtn.addEventListener('click', () => {
+        try { localStorage.setItem(joinedKey, '1'); } catch {}
+        setJoinedUI(true);
+      });
+    }
+    btn.addEventListener('click', async () => {
+      if (localStorage.getItem(joinedKey)) { setJoinedUI(true); return; }
+      btn.disabled = true;
+      const prev = btn.textContent;
+      btn.textContent = 'Joining…';
+      try {
+        await joinOnce();
+        localStorage.setItem(joinedKey, '1');
+        setJoinedUI(true);
+      } catch (e) {
+        console.warn('join failed:', e);
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+        setTimeout(() => { if (btn && !localStorage.getItem(joinedKey)) btn.textContent = prev || 'Join Unity'; }, 1600);
+      }
+    });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', run);
+} else {
+  run();
+}

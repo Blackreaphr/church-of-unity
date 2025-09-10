@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "risk": {
+    "publish_lt": 20,
+    "limited_lt": 50
+  },
+  "routing_overrides": {
+    "p0_block_immediate": true,
+    "media_hash_quarantine": true
+  },
+  "tier_overrides": {
+    "T0": {
+      "publish_behavior": "limited",
+      "uncertain_behavior": "quarantine",
+      "limits": { "topics_per_day": 2, "posts_per_day": 10 }
+    },
+    "T1": {
+      "uncertain_behavior": "limited",
+      "limits": { "topics_per_day": 5, "posts_per_day": 30 }
+    },
+    "T2": {
+      "uncertain_behavior": "limited",
+      "limits": { "topics_per_day": 10, "posts_per_day": 100 }
+    }
+  },
+  "media": {
+    "disallow_mimes_T0": [
+      "application/x-msdownload",
+      "application/x-msdos-program",
+      "application/x-msi",
+      "application/x-dosexec",
+      "application/java-archive",
+      "application/x-rar-compressed",
+      "application/zip",
+      "application/x-7z-compressed"
+    ]
+  },
+  "links": {
+    "expand_shorteners": true,
+    "reputation_check": true
+  }
+}
+

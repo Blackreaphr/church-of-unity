@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Moderation Queue | Church of Unity</title>
+    <meta name="description" content="Internal moderation queue and scoring sandbox" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/assets/symbol.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/site/moderation.js"></script>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="container hero-inner">
+        <h1 class="site-title">Moderation</h1>
+        <p class="muted">Internal queue and scoring sandbox</p>
+      </div>
+    </header>
+
+    <main id="main" class="container" style="max-width: 980px;">
+      <section class="section" aria-labelledby="auth">
+        <h2 id="auth">Authentication</h2>
+        <p class="muted">If your worker config sets a MOD_TOKEN, enter it below. Leave blank if not configured (dev only).</p>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input id="tokenInput" type="password" placeholder="Bearer token" style="flex:1;" aria-label="Moderator token" />
+          <button id="saveTokenBtn" class="ghost">Save</button>
+          <button id="clearTokenBtn" class="ghost">Clear</button>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="queue">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+          <h2 id="queue">Queue</h2>
+          <div>
+            <button id="refreshQueueBtn" class="ghost">Refresh</button>
+          </div>
+        </div>
+        <div id="queueList" class="forum-list" role="list" aria-live="polite"></div>
+      </section>
+
+      <section class="section" aria-labelledby="sandbox">
+        <h2 id="sandbox">Scoring Sandbox</h2>
+        <p class="muted">Test the creation-time scoring with sample content.</p>
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+          <select id="tierSelect" aria-label="Trust tier">
+            <option value="T0">T0 (Probation)</option>
+            <option value="T1">T1 (Trusted)</option>
+            <option value="T2">T2 (Established)</option>
+          </select>
+          <input id="tagsInput" type="text" placeholder="Tags (comma-separated)" style="flex:1;" aria-label="Tags" />
+        </div>
+        <textarea id="textInput" rows="6" style="width:100%;" placeholder="Paste text to score..."></textarea>
+        <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+          <button id="scoreBtn" class="ghost">Score</button>
+          <span id="scoreStatus" class="muted" aria-live="polite"></span>
+        </div>
+        <pre id="scoreOut" class="callout" style="white-space:pre-wrap; overflow:auto; margin-top:8px;">(result)</pre>
+      </section>
+    </main>
+  </body>
+  
+</html>
+

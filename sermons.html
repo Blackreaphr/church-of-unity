@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sermons and Reflections | Church of Unity</title>
+    <meta name="description" content="Short homilies and essays that model charitable reasoning and careful use of sources." />
+    <meta name="theme-color" content="#0b0c10" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/symbol.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <script type="module" src="/site/meta.js?v=202509101828"></script>
+    <script type="module" src="/site/search.js"></script>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+    <header class="hero">
+      <div class="container hero-inner">
+        <div class="symbol-wrap" aria-hidden="true">
+          <svg id="emblem" class="symbol" viewBox="0 0 200 200" role="img" aria-label="Animated emblem">
+            <defs>
+              <filter id="warp" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.001" numOctaves="2" seed="4" result="noise"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+              <linearGradient id="strokeGrad" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#e23a4b"/>
+                <stop offset="100%" stop-color="#ffffff"/>
+              </linearGradient>
+            </defs>
+            <g id="ordered" stroke="url(#strokeGrad)" stroke-width="2.2" fill="none">
+              <circle cx="100" cy="100" r="78" opacity="0.8"/>
+              <circle cx="100" cy="100" r="52" opacity="0.55" stroke-dasharray="2 6"/>
+              <g id="radials" opacity="0.45">
+                <line x1="100" y1="24" x2="100" y2="176"/>
+                <line x1="24" y1="100" x2="176" y2="100"/>
+                <line x1="38" y1="38" x2="162" y2="162"/>
+                <line x1="162" y1="38" x2="38" y2="162"/>
+              </g>
+            </g>
+            <g id="spiralWrap" filter="url(#warp)">
+              <path id="spiral" d="" stroke="url(#strokeGrad)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+        <div class="hero-copy">
+          <h1 class="site-title">Sermons and Reflections</h1>
+          <p class="tagline">Short words offered with humility and care</p>
+        </div>
+      </div>
+    </header>
+    <nav class="site-nav" aria-label="Primary">
+      <div class="container nav-inner">
+        <div class="nav-links">
+          <a class="home" href="/index.html">Home</a>
+          <a href="/start-here.html">Start Here</a>
+          <a href="/practice.html">Practice</a>
+          <a href="/texts-library.html">Texts</a>
+          <a href="/inquiry-forum.html">Inquiry</a>
+          <a href="/about.html">About</a>
+          <details class="more">
+            <summary>More</summary>
+            <div class="more-menu" role="menu">
+              <a role="menuitem" href="/divine-law.html">Divine Law</a>
+              <a role="menuitem" href="/philosophy.html">Philosophy</a>
+              <a role="menuitem" href="/chaos-order.html">Chaos and Order</a>
+              <a role="menuitem" href="/fate-destiny.html">Fate and Destiny</a>
+              <a role="menuitem" href="/heaven-hell-journey.html">Heaven, Hell, and the Human Journey</a>
+              <a role="menuitem" href="/names-of-god.html">The Many Names of God</a>
+              <a role="menuitem" href="/sermons.html">Sermons and Reflections</a>
+              <a role="menuitem" href="/glossary.html">Glossary</a>
+              <a role="menuitem" href="/about.html#governance">Governance</a>
+            </div>
+          </details>
+        </div>
+        <div class="nav-right">
+          <button id="navSearch" class="ghost" aria-label="Search" title="Search" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main id="main" class="container">
+      <section class="section dropcap" id="welcome">
+        <h2>Welcome</h2>
+        <p>These short sermons follow Scripture. Each offers a clear teaching, a few questions for reflection, and one practice you can try today. Read slowly, then pray.</p>
+      </section>
+
+      <section class="section" id="how-to">
+        <h2>How to Use This Page</h2>
+        <p>Choose a series or a lection meditation, read the Scripture, pause for silence, note one line to remember, and try the practice this week.</p>
+      </section>
+
+      <section class="section" id="series">
+        <h2>Series</h2>
+        <article>
+          <h3>Beatitudes</h3>
+          <p>Eight blessings that sketch the character of a disciple. Poverty of spirit, meek strength, mercy, purity of heart, peacemaking, and steadfast hope.</p>
+        </article>
+        <article>
+          <h3>Parables of Mercy</h3>
+          <p>Stories of loss and finding, debt forgiven, the Father who runs to embrace. A school of grace that reshapes conscience and community.</p>
+        </article>
+        <article>
+          <h3>Psalms of Ascent</h3>
+          <p>Pilgrim songs for the road to God. Desire, danger, help, and joy in plain words that teach prayer.</p>
+        </article>
+      </section>
+
+      <section class="section" id="lection">
+        <h2>Lection Meditations</h2>
+        <p>Short reflections (500-800 words) tied to Sunday readings, each with two or three questions and a practice.</p>
+      </section>
+
+      <section class="section dropcap" id="sample-beatitudes">
+        <h2>Sample Sermon: Beatitudes</h2>
+        <h3>Blessed Are the Poor in Spirit</h3>
+        <p><strong>Text:</strong> Matthew 5:1-12, focus on verse 3. &ldquo;Blessed are the poor in spirit: for theirs is the kingdom of heaven.&rdquo; (KJV).</p>
+        <p>The Sermon on the Mount begins with a surprise. Jesus names a kind of poverty as blessed. This is not a romance with misery. It is the honest recognition that our life is received. We do not generate our own light. We live from God.</p>
+        <p>Poverty of spirit is the door. The proud heart stays outside because it believes it lacks nothing. The poor in spirit can enter because empty hands are free to receive. The blessing is not a prize for successful weakness. It is a gift attached to a truth about reality. God is the giver. The kingdom belongs to those who know they need him.</p>
+        <p>Think of a house with many rooms. Each room is an aspect of life: work, family, memory, desire, fear. We can try to lock these rooms from the inside. We can also open the doors. Poverty of spirit turns the key. It says, &ldquo;Lord, this too is yours.&rdquo; The point is not self-contempt. It is trust. The self is safest when entrusted to God.</p>
+        <p>Many Christians speak of providence. God sustains all things and works through ordinary causes. Poverty of spirit aligns with providence. It loosens the grip of anxious control and makes us ready to cooperate with grace. Freedom grows here, not smaller but truer, because it is no longer driven by the need to prove, compare, or win.</p>
+        <p>What does this look like in practice? A student who asks for help before panic turns a task into a crisis. A parent who names fatigue and receives care rather than hiding behind a bright face. A leader who admits limits and invites others to share the work. Each act is small. Each act opens a window. Air moves. Light enters. The kingdom is near.</p>
+        <p>The Beatitudes form a sequence. Poverty of spirit clears space. Mourning teaches honest sorrow before God. Meekness is strength bridled by love. Hunger and thirst for righteousness orient desire toward the good. Mercy bends power to heal. Purity of heart trains attention toward God. Peacemaking joins truth and courage. Steadfastness in persecution keeps hope when faith costs. The first step remains the same: open the hands.</p>
+        <p>Some hear &ldquo;poverty&rdquo; and fear loss. The Gospel makes a different promise. When we surrender the illusion of self-sufficiency, we do not shrink. We are given back to ourselves in friendship with God. The kingdom is not a distant reward. It is God's reign taking root in the present, bearing fruit in patience, justice, and joy.</p>
+        <p>Let one line travel with you today: &ldquo;Blessed are the poor in spirit.&rdquo; When you meet a task that stirs anxiety, breathe and say, &ldquo;I receive this moment from you.&rdquo; When you meet a joy, say, &ldquo;I receive.&rdquo; When you meet a limit, say, &ldquo;I receive.&rdquo; These simple prayers are not magic. They are a steady practice of truth. God is God. We are his. The kingdom belongs to those who know it.</p>
+      </section>
+
+      <section class="section" id="reflection-questions">
+        <h2>Reflection Questions</h2>
+        <ul>
+          <li>Where do I most try to live without help from God or others?</li>
+          <li>Which room in my life needs its door opened to grace this week?</li>
+          <li>What would poverty of spirit change about how I work, rest, or speak?</li>
+        </ul>
+      </section>
+
+      <section class="section" id="practice">
+        <h2>Practice</h2>
+        <p>A pocket examen for humility. At midday and at night, ask three questions:</p>
+        <ol>
+          <li>What did I receive today?</li>
+          <li>Where did I cling or grasp?</li>
+          <li>What can I place back into God's hands?</li>
+        </ol>
+        <p>Close with the prayer, &ldquo;Lord, teach me poverty of spirit.&rdquo;</p>
+      </section>
+
+      <section class="section" id="tie-ins">
+        <h2>Practice Tie-ins</h2>
+        <p>Every sermon ends with a concrete step. You can also try lectio divina: read the passage, repeat one phrase, rest in silence, and resolve one act of love.</p>
+        <p class="muted">See also: <a href="/guides/lectio-divina.html">Guide: Lectio Divina</a></p>
+      </section>
+
+      <section class="section" id="audio">
+        <h2>Audio Option</h2>
+        <p>When you are ready, add a 3-5 minute read-aloud of each sermon. An ordinary HTML audio player is enough for launch.</p>
+      </section>
+
+      <section class="section" id="archive">
+        <h2>Archive</h2>
+        <p>Browse by Scripture book, theme, or length. Suggested tags: Beatitudes, Parables, Psalms, Providence, Mercy, Hope. Length filters: Short, Standard, Long.</p>
+      </section>
+
+      <section class="section" id="closing">
+        <h2>Closing</h2>
+        <p>May these reflections open Scripture and strengthen love. Share what helps and what confuses, and we will keep shaping this page together.</p>
+      </section>
+    </main>
+    <footer class="footer container">
+      <small>&copy; <span id="year"></span> Church of Unity</small>
+    </footer>
+    <script type="module" src="/main.js"></script>
+  </body>
+ </html>

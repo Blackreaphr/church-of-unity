@@ -1,0 +1,25 @@
+{
+  "name": "church-of-unity",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "postbuild": "node scripts/stamp-version.mjs dist",
+    "stamp": "node scripts/stamp-version.mjs . dist",
+    "build:stamp": "vite build && node scripts/stamp-version.mjs dist",
+    "deploy:worker": "wrangler deploy --config cloudflare/stats-worker/wrangler.toml",
+    "deploy": "npm run build && npm run stamp && npm run deploy:worker",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pdf": "node scripts/export-pdf.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "vite": "^7.1.4"
+  }
+}

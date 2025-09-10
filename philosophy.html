@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Philosophy: Death and What Lies Beyond | Church of Unity</title>
+    <meta name="description" content="A brief philosophical survey of the state of being dead and theories about what may lie beyond death, with attention to meaning and practice." />
+    <meta name="theme-color" content="#0b0c10" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/symbol.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <script type="module" src="/site/meta.js?v=202509101828"></script>
+    <script type="module" src="/site/search.js"></script>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+
+    <header class="hero">
+      <div class="container hero-inner">
+        <div class="symbol-wrap" aria-hidden="true">
+          <svg id="emblem" class="symbol" viewBox="0 0 200 200" role="img" aria-label="Animated emblem">
+            <defs>
+              <filter id="warp" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.001" numOctaves="2" seed="4" result="noise"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+              <linearGradient id="strokeGrad" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#e23a4b"/>
+                <stop offset="100%" stop-color="#ffffff"/>
+              </linearGradient>
+            </defs>
+            <g id="ordered" stroke="url(#strokeGrad)" stroke-width="2.2" fill="none">
+              <circle cx="100" cy="100" r="78" opacity="0.8"/>
+              <circle cx="100" cy="100" r="52" opacity="0.55" stroke-dasharray="2 6"/>
+              <g id="radials" opacity="0.45">
+                <line x1="100" y1="24" x2="100" y2="176"/>
+                <line x1="24" y1="100" x2="176" y2="100"/>
+                <line x1="38" y1="38" x2="162" y2="162"/>
+                <line x1="162" y1="38" x2="38" y2="162"/>
+              </g>
+            </g>
+            <g id="spiralWrap" filter="url(#warp)">
+              <path id="spiral" d="" stroke="url(#strokeGrad)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+        <div class="hero-copy">
+          <h1 class="site-title">Philosophy</h1>
+          <p class="tagline">Death, the state of the dead, and what may follow</p>
+        </div>
+      </div>
+    </header>
+
+    <nav class="site-nav" aria-label="Primary">
+      <div class="container nav-inner">
+        <div class="nav-links">
+          <a class="home" href="/index.html">Home</a>
+          <a href="/start-here.html">Start Here</a>
+          <a href="/practice.html">Practice</a>
+          <a href="/texts-library.html">Texts</a>
+          <a href="/inquiry-forum.html">Inquiry</a>
+          <a href="/about.html">About</a>
+          <details class="more" open>
+            <summary>More</summary>
+            <div class="more-menu" role="menu">
+              <a role="menuitem" href="/divine-law.html">Divine Law</a>
+              <a role="menuitem" href="/philosophy.html" aria-current="page">Philosophy</a>
+              <a role="menuitem" href="/chaos-order.html">Chaos and Order</a>
+              <a role="menuitem" href="/fate-destiny.html">Fate and Destiny</a>
+              <a role="menuitem" href="/heaven-hell-journey.html">Heaven, Hell, and the Human Journey</a>
+              <a role="menuitem" href="/names-of-god.html">The Many Names of God</a>
+              <a role="menuitem" href="/sermons.html">Sermons and Reflections</a>
+              <a role="menuitem" href="/glossary.html">Glossary</a>
+              <a role="menuitem" href="/about.html#governance">Governance</a>
+            </div>
+          </details>
+        </div>
+        <div class="nav-right">
+          <button id="navSearch" class="ghost" aria-label="Search" title="Search" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main id="main" class="container">
+      <section class="section">
+        <h2>How to begin</h2>
+        <p>
+          Start small and steady. Set aside thirty minutes once a week. Use a notebook. Move through three simple steps: read, reflect, and discuss. The aim is clarity that serves life, not clever debate.
+        </p>
+        <ol>
+          <li><strong>Read:</strong> choose one short passage and read it twice. Name one claim.</li>
+          <li><strong>Reflect:</strong> ask what follows if the claim is true and what if it is not.</li>
+          <li><strong>Discuss:</strong> state one reason and test it with a friend or group.</li>
+        </ol>
+      </section>
+
+      <section class="section dropcap">
+        <h2>What it is to be dead</h2>
+        <p>
+          Philosophers often begin with clear description. Death is the end of a living body's integrated activity. The heart no longer circulates blood, the brain no longer sustains consciousness, and the organism ceases to maintain itself. To be dead, in biological terms, is to have crossed that boundary. The philosophical question asks what, if anything, remains of the person when the body's activity ends, and what counts as the same person across change.
+        </p>
+        <p>
+          Accounts of personal identity frame the issue. If identity depends only on the body, then death ends the person. If identity depends on consciousness, memory, or a non-material subject, then the person may continue if those features continue. The debate turns on criteria for sameness through time and on the status of mind with respect to matter.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Major views about the state of the dead</h2>
+        <p>
+          One set of views holds that the dead are not conscious. On this account there is no subject of experience after death. The person's story continues only in the effects he or she leaves behind, such as memories in others, works accomplished, and the consequences of action. This view urges seriousness about the present because present choices are the only arena of awareness.
+        </p>
+        <p>
+          Another family of views affirms some mode of personal survival. Dualist proposals claim that the soul can exist without the body and may continue in a state of awareness. Traditions that teach resurrection maintain that the human person, essentially embodied, can be restored to life by God in a transformed condition. These positions differ, yet each preserves personal subjectivity beyond death and invites moral and spiritual preparation.
+        </p>
+        <p>
+          Cyclical accounts propose that persons begin new lives. Reincarnation theories raise questions about what binds lives together across time. If memory is rarely retained, continuity may rest on a deeper subject or on causal and moral linkage. Such views encourage attention to long horizons of growth and to the moral fabric of action.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Meanings drawn for life now</h2>
+        <p>
+          Reflections on death return to practice. If consciousness ends at death, meaning is gathered by truthful love, responsibility, and the gifts we offer while we are here. If there is survival, meaning includes preparation of the heart, reconciliation, and the cultivation of virtues that shape a stable self. In either case, clarity about finitude strengthens gratitude, courage, and care for others.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Open questions</h2>
+        <p>
+          What makes a person the same across time? How does consciousness relate to the brain? Can hope be rational when certainty is unavailable? Good philosophy names the limits of its claims and seeks understanding in conversation with science, experience, and religious witness. The Church of Unity attends to these sources and welcomes careful dialogue aimed at truth and charity.
+        </p>
+      </section>
+      <nav class="pager" aria-label="Pagination">
+        <a class="page-link current" aria-current="page">1</a>
+        <a class="page-link" href="/philosophy-2.html" rel="next">2</a>
+        <a class="page-link" href="/philosophy-2.html" rel="next">Next »</a>
+      </nav>
+    </main>
+
+    <footer class="footer container">
+      <small>&copy; <span id="year"></span> Church of Unity</small>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Study Guides | Church of Unity</title>
+    <meta name="description" content="Guides for practice and study." />
+    <meta name="theme-color" content="#0b0c10" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="forum-default-category" content="Study Guides" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/assets/symbol.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <script type="module" src="/site/meta.js?v=202509101828"></script>
+    <script type="module" src="/site/search.js"></script>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .forum-filters { position: sticky; top: 62px; z-index: 5; background: rgba(10,11,15,0.75); backdrop-filter: blur(6px); border:1px solid var(--border); border-radius:12px; padding:10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+      .forum-tabs { display:flex; gap:6px; }
+      .forum-tabs .tab { padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:transparent; color:var(--text); cursor:pointer; }
+      .forum-tabs .tab[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: rgba(226,58,75,0.08); }
+      .forum-controls { display:flex; gap:8px; align-items:center; margin-left:auto; }
+      .forum-controls .search-input { width: 240px; }
+      .forum-controls .select, select.select { background:#0a0b0f; color:var(--text); border:1px solid #1a1c22; border-radius:10px; padding:8px 10px; }
+      .forum-grid { display:grid; grid-template-columns: 1fr minmax(220px, 280px); gap: 24px; align-items:start; }
+      .forum-list { display:grid; gap:10px; }
+      .forum-item { border:1px solid var(--border); border-radius:12px; padding:12px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); }
+      .topic-head { display:flex; align-items:center; gap:8px; }
+      .topic-title { margin:0; font-size:1.05rem; }
+      .pill { display:inline-block; font-size:12px; color:var(--muted); border:1px solid #2b2e35; padding:2px 8px; border-radius:999px; }
+      .avatar { width:24px; height:24px; border-radius:50%; background:#222; display:inline-grid; place-items:center; font: 12px/1 var(--font-sans); color:#fff; border:1px solid #2b2e35; }
+      .meta-line { color:var(--muted); font-size: 13px; margin-top: 4px; display:flex; gap:10px; align-items:center; }
+      .rightbar { position: sticky; top: 108px; border:1px solid var(--border); border-radius:12px; padding:12px; background:#0f1116; }
+      .load-sentinel { height: 1px; }
+      .cat-list { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 6px; }
+      .cat-list a { display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: var(--text); border:1px solid var(--border); border-radius:10px; padding:8px 10px; }
+      .cat-list a:hover { background: rgba(255,255,255,0.03); border-color:#333843; }
+      .code-snippet { background:#0a0b0f; border:1px solid var(--border); border-radius:10px; padding:10px; overflow:auto; max-height: 260px; }
+      @media (max-width: 960px){ .forum-grid { grid-template-columns: 1fr; } .forum-controls { width:100%; margin-left:0; } .forum-controls .search-input { flex:1; width:auto; }}
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+    <header class="hero">
+      <div class="container hero-inner">
+        <div class="symbol-wrap" aria-hidden="true">
+          <svg id="emblem" class="symbol" viewBox="0 0 200 200" role="img" aria-label="Animated emblem">
+            <defs>
+              <filter id="warp" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.001" numOctaves="2" seed="4" result="noise"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+              <linearGradient id="strokeGrad" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#e23a4b"/>
+                <stop offset="100%" stop-color="#ffffff"/>
+              </linearGradient>
+            </defs>
+            <g id="ordered" stroke="url(#strokeGrad)" stroke-width="2.2" fill="none">
+              <circle cx="100" cy="100" r="78" opacity="0.8"/>
+              <circle cx="100" cy="100" r="52" opacity="0.55" stroke-dasharray="2 6"/>
+              <g id="radials" opacity="0.45">
+                <line x1="100" y1="24" x2="100" y2="176"/>
+                <line x1="24" y1="100" x2="176" y2="100"/>
+                <line x1="38" y1="38" x2="162" y2="162"/>
+                <line x1="162" y1="38" x2="38" y2="162"/>
+              </g>
+            </g>
+            <g id="spiralWrap" filter="url(#warp)">
+              <path id="spiral" d="" stroke="url(#strokeGrad)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+        <div class="hero-copy">
+          <h1 class="site-title">Study Guides</h1>
+          <p class="tagline">Guides for practice and study</p>
+          <div class="forum-hero-actions">
+            <a class="btn-primary" href="/forum/welcome.html">Start a topic</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <nav class="site-nav" aria-label="Primary">
+      <div class="container nav-inner">
+        <div class="nav-links forum-bar">
+          <a class="home nav-accent" href="/index.html">Home</a><span class="nav-sep" aria-hidden="true">|</span><a class="nav-accent" href="/forum.html">Forum</a><span class="nav-sep" aria-hidden="true">|</span><a class="nav-accent" href="/forum-feed.html?from=study-guides">Forum Feed</a>
+        </div>
+      </div>
+    </nav>
+
+    <main id="main" class="container">
+      <div id="backBar" class="top-actions" hidden></div>
+      <section class="section" id="forum-feed">
+        <div class="forum-filters">
+          <div class="forum-tabs" role="tablist" aria-label="Sort">
+            <button class="tab" data-tab="latest" aria-pressed="true">Latest</button>
+            <button class="tab" data-tab="top">Top</button>
+            <button class="tab" data-tab="new">New</button>
+            <button class="tab" data-tab="unanswered">Unanswered</button>
+          </div>
+          <div class="forum-controls">
+            <input id="forumSearch" class="search-input" type="search" placeholder="Search topics" aria-label="Search topics" />
+            <select id="forumCategory" class="select" aria-label="Filter by category">
+              <option value="">All categories</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="forum-grid">
+          <div>
+            <div id="forumList" class="forum-list" role="list"></div>
+            <div id="forumSentinel" class="load-sentinel" aria-hidden="true"></div>
+          </div>
+          <aside class="rightbar" aria-label="About the forum">
+            <h3 style="margin:0 0 8px 0; font-family: var(--font-serif);">Key Links</h3>
+            <ul class="cat-list" aria-label="Key links">
+              <li><a href="/start-here.html"><span>Start Here</span><span class="muted">guide</span></a></li>
+              <li><a href="/forum/guidelines.html"><span>Guidelines</span><span class="muted">rules</span></a></li>
+              <li><a href="/forum/announcements.html"><span>Announcements</span><span class="muted">news</span></a></li>
+              <li><a href="/forum/help.html"><span>Help &amp; Support</span><span class="muted">contact</span></a></li>
+              <li><a href="/forum/prayer-and-reflections.html"><span>Prayer &amp; Self-Reflection</span><span class="muted">category</span></a></li>
+              <li><a href="/forum-feed/study-guides/"><span>Study Guides</span><span class="muted">category</span></a></li>
+            </ul>
+            <h3 style="margin:14px 0 6px 0; font-family: var(--font-serif);">About the Forum</h3>
+            <p class="muted">Share longer texts and read with charity. Start small, give reasons, and invite dialogue.</p>
+            <h3 style="margin:14px 0 6px 0; font-family: var(--font-serif);">Categories</h3>
+            <ul id="forumCats" class="cat-list" aria-label="Categories"></ul>
+            <h3 id="new-topic-template" style="margin:14px 0 6px 0; font-family: var(--font-serif);">New Topic Template</h3>
+            <p class="muted">Copy, create a file under <code>/forum/</code>, then add an entry in <code>/data/forum-posts.json</code>.</p>
+            <button id="copyTemplate" class="ghost" type="button">Copy template</button>
+            <pre id="topicTemplate" class="code-snippet" aria-label="Topic HTML template"><code>&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+    &lt;title&gt;Title | Church of Unity&lt;/title&gt;
+    &lt;meta name=&quot;description&quot; content=&quot;&quot; /&gt;
+    &lt;link rel=&quot;manifest&quot; href=&quot;/site.webmanifest&quot; /&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot; /&gt;
+    &lt;script type=&quot;module&quot; src=&quot;/site/meta.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;module&quot; src=&quot;/site/search.js&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;a class=&quot;skip-link&quot; href=&quot;#main&quot;&gt;Skip to content&lt;/a&gt;
+    &lt;canvas id=&quot;bgCanvas&quot; aria-hidden=&quot;true&quot;&gt;&lt;/canvas&gt;
+    &lt;header class=&quot;hero&quot;&gt;&lt;div class=&quot;container hero-inner&quot;&gt;&lt;div class=&quot;hero-copy&quot;&gt;
+      &lt;h1 class=&quot;site-title&quot;&gt;Title&lt;/h1&gt;
+      &lt;p class=&quot;tagline&quot;&gt;YYYY-MM-DD&lt;/p&gt;
+    &lt;/div&gt;&lt;/div&gt;&lt;/header&gt;
+    &lt;nav class=&quot;site-nav&quot; aria-label=&quot;Primary&quot;&gt;&lt;div class=&quot;container nav-inner&quot;&gt;&lt;div class=&quot;nav-links&quot;&gt;
+      &lt;a class=&quot;home&quot; href=&quot;/index.html&quot;&gt;Home&lt;/a&gt; &lt;a href=&quot;/forum.html&quot;&gt;Back to Forum&lt;/a&gt;
+    &lt;/div&gt;&lt;/div&gt;&lt;/nav&gt;
+    &lt;main id=&quot;main&quot; class=&quot;container&quot;&gt;
+      &lt;article class=&quot;section dropcap&quot;&gt;
+        &lt;p&gt;Write here.&lt;/p&gt;
+      &lt;/article&gt;
+    &lt;/main&gt;
+    &lt;footer class=&quot;footer container&quot;&gt;&lt;small&gt;&amp;copy; &lt;span id=&quot;year&quot;&gt;&lt;/span&gt; Church of Unity&lt;/small&gt;&lt;/footer&gt;
+    &lt;script type=&quot;module&quot; src=&quot;/main.js&quot;&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer container">
+      <small>&copy; <span id="year"></span> Church of Unity</small>
+    </footer>
+
+    <script>
+      // Use the same header adaptation logic as base feed, but meta provides defaults
+      (function(){
+        try {
+          const h = document.querySelector('.hero .site-title');
+          const t = document.querySelector('.hero .tagline');
+          if (h) h.textContent = 'Study Guides';
+          if (t) t.textContent = 'Guides for practice and study';
+        } catch (_) {}
+      })();
+    </script>
+    <script type="module" src="/site/forum.js"></script>
+    <script type="module" src="/main.js"></script>
+  </body>
+ </html>

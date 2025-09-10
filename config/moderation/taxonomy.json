@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "controlled_tags": [
+    "faith",
+    "philosophy",
+    "practice",
+    "scripture",
+    "catechism",
+    "sermons",
+    "essays",
+    "guides",
+    "community",
+    "announcements",
+    "introductions",
+    "help",
+    "governance",
+    "feedback",
+    "prayer",
+    "reflection"
+  ],
+  "sensitive_selectors": [
+    { "key": "adult-sexual-content", "label": "Adult sexual content", "policy_label": "P1" },
+    { "key": "graphic-violence", "label": "Graphic violence", "policy_label": "P1" },
+    { "key": "medical-or-financial-claims", "label": "Medical or financial claims", "policy_label": "P1" },
+    { "key": "hateful-or-harassing", "label": "Hateful or harassing", "policy_label": "P1" }
+  ],
+  "ui_copy": {
+    "create_title": "Create a Topic",
+    "create_helper": "Select 1–3 tags. Sensitive topics require review.",
+    "friction_notice": "Verify email and phone; complete CAPTCHA to post.",
+    "free_text_tags_helper": "Propose up to 3 new tags (hidden until approved).",
+    "limited_notice_template": "Your post is under review due to policy {label}. It may be visible on your profile but excluded from feeds.",
+    "blocked_p0_notice": "This content can’t be published (P0 policy). Your account has been restricted. You may appeal."
+  },
+  "validation_messages": {
+    "require_tag": "Select at least one tag from the list.",
+    "too_many_tags": "Select at most 3 tags.",
+    "free_text_hidden": "Free‑text tags are pending review and won’t appear in navigation.",
+    "no_exec_attachments": "Executable and archive attachments are not allowed for new accounts."
+  },
+  "free_text_tag_policy": {
+    "max_count": 3,
+    "visible_in_nav": false,
+    "requires_review": true
+  }
+}
+

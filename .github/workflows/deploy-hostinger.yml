@@ -1,0 +1,37 @@
+name: Deploy to Hostinger (SFTP)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (with version stamping)
+        run: npm run build:stamp
+
+      - name: Deploy via SFTP
+        uses: pressidium/lftp-mirror-action@v1
+        with:
+          host: ${{ secrets.HST_HOST }}
+          port: ${{ secrets.HST_PORT }}
+          protocol: sftp
+          username: ${{ secrets.HST_USER }}
+          password: ${{ secrets.HST_PASS }}
+          localDir: dist
+          remoteDir: ${{ secrets.HST_REMOTE_DIR }}
+          args: --verbose --parallel=8 --exclude-glob .git* --exclude-glob .github/** --exclude-glob cloudflare/** --exclude-glob node_modules/** --exclude-glob scripts/** --exclude-glob *.map --exclude-glob *.md --delete

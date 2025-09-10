@@ -1,0 +1,174 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inquiry Forum | Church of Unity</title>
+    <meta name="description" content="Moderated dialogue with weekly questions and seeded threads. A space for careful, charitable reasoning." />
+    <meta name="theme-color" content="#0b0c10" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/symbol.png" />`n    <link rel="manifest" href="/site.webmanifest" />`n    <script type="module" src="/site/meta.js?v=202509101828"></script>`n    <script type="module" src="/site/search.js"></script>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+    <header class="hero">
+      <div class="container hero-inner">
+        <div class="symbol-wrap" aria-hidden="true">
+          <svg id="emblem" class="symbol" viewBox="0 0 200 200" role="img" aria-label="Animated emblem">
+            <defs>
+              <filter id="warp" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.001" numOctaves="2" seed="4" result="noise"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+              <linearGradient id="strokeGrad" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#e23a4b"/>
+                <stop offset="100%" stop-color="#ffffff"/>
+              </linearGradient>
+            </defs>
+            <g id="ordered" stroke="url(#strokeGrad)" stroke-width="2.2" fill="none">
+              <circle cx="100" cy="100" r="78" opacity="0.8"/>
+              <circle cx="100" cy="100" r="52" opacity="0.55" stroke-dasharray="2 6"/>
+              <g id="radials" opacity="0.45">
+                <line x1="100" y1="24" x2="100" y2="176"/>
+                <line x1="24" y1="100" x2="176" y2="100"/>
+                <line x1="38" y1="38" x2="162" y2="162"/>
+                <line x1="162" y1="38" x2="38" y2="162"/>
+              </g>
+            </g>
+            <g id="spiralWrap" filter="url(#warp)">
+              <path id="spiral" d="" stroke="url(#strokeGrad)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+        <div class="hero-copy">
+          <h1 class="site-title">Inquiry Forum</h1>
+          <p class="tagline">Moderated dialogue and weekly questions</p>
+        </div>
+      </div>
+    </header>
+        <nav class="site-nav" aria-label="Primary">
+      <div class="container nav-inner">
+        <div class="nav-links">
+          <a class="home" href="/index.html">Home</a>
+          <a href="/start-here.html">Start Here</a>
+          <a href="/practice.html">Practice</a>
+          <a href="/texts-library.html">Texts</a>
+          <a href="/inquiry-forum.html">Inquiry</a>
+          <a href="/about.html">About</a>
+          <details class="more">
+            <summary>More</summary>
+            <div class="more-menu" role="menu">
+              <a role="menuitem" href="/divine-law.html">Divine Law</a>
+              <a role="menuitem" href="/philosophy.html">Philosophy</a>
+              <a role="menuitem" href="/chaos-order.html">Chaos and Order</a>
+              <a role="menuitem" href="/fate-destiny.html">Fate and Destiny</a>
+              <a role="menuitem" href="/heaven-hell-journey.html">Heaven, Hell, and the Human Journey</a>
+              <a role="menuitem" href="/names-of-god.html">The Many Names of God</a>
+              <a role="menuitem" href="/sermons.html">Sermons and Reflections</a>
+              <a role="menuitem" href="/glossary.html">Glossary</a>
+              <a role="menuitem" href="/about.html#governance">Governance</a>
+            </div>
+          </details>
+        </div>
+        <div class="nav-right">
+          <button id="navSearch" class="ghost" aria-label="Search" title="Search" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main id="main" class="container">
+      <section class="section dropcap" id="welcome">
+        <h2>Welcome</h2>
+        <p>We gather as seekers. Ask one clear question, offer sources when you can, and answer others with patience. Our aim is understanding in common.</p>
+      </section>
+
+      <section class="section" id="posting-guide">
+        <h2>Posting Guide</h2>
+        <ul>
+          <li><strong>One question, one thread:</strong> Use a title that states the claim or topic.</li>
+          <li><strong>Opener length:</strong> 100 words or fewer. Add sources or longer notes in a follow-up comment.</li>
+          <li><strong>Clarity:</strong> Define key terms at first use. Example: providence, free will, natural law.</li>
+          <li><strong>Charity:</strong> State the strongest version of another view before you critique it.</li>
+          <li><strong>Sources:</strong> Cite Scripture by book, chapter, and verse. Name other sources by author and work.</li>
+          <li><strong>Tone:</strong> Ask, do not accuse. Address ideas, not persons.</li>
+          <li><strong>Boundaries:</strong> No legal, medical, or mental-health advice. Seek professional help when needed.</li>
+        </ul>
+      </section>
+
+      <section class="section" id="starter-prompts">
+        <h2>Starter Prompts</h2>
+        <ul>
+          <li>Is divine foreknowledge compatible with real human freedom?</li>
+          <li>How does natural law speak to today’s moral debates?</li>
+          <li>What practices help Christians walk through grief with hope?</li>
+          <li>Which images help worship, and which distract?</li>
+        </ul>
+      </section>
+
+      <section class="section" id="focus">
+        <h2>Inquiries in Focus</h2>
+        <p>Each month we feature one thread and post a short curator’s summary.</p>
+        <h3>Format</h3>
+        <ul>
+          <li>What the question is asking</li>
+          <li>Main views presented</li>
+          <li>Two helpful sources to read next</li>
+          <li>One practice to try this week</li>
+        </ul>
+      </section>
+
+      <section class="section" id="discernment">
+        <h2>Discernment Cues</h2>
+        <p class="muted">Use these steps when you test a claim.</p>
+        <ul>
+          <li>State the claim in one sentence.</li>
+          <li>Read Scripture that bears on the claim. Note where texts agree and where emphasis differs.</li>
+          <li>Consult tradition by checking trusted witnesses such as Augustine, Aquinas, Julian of Norwich, or a catechism.</li>
+          <li>Reason about the claim. Look for clear terms, valid inferences, and real-world coherence.</li>
+          <li>Consider fruits. Ask what the claim produces in life: faith, hope, and love, or their opposites.</li>
+          <li>Revise your view if needed and name what remains open.</li>
+        </ul>
+      </section>
+
+      <section class="section" id="safety">
+        <h2>Safety and Care</h2>
+        <p>Some topics touch grief, trauma, and conscience. Share carefully and honor privacy. If you find yourself in distress, speak with a pastor, counselor, or trusted friend. You are not alone.</p>
+      </section>
+
+      <section class="section" id="moderation">
+        <h2>Moderation and Conduct</h2>
+        <ul>
+          <li>First reminder for tone.</li>
+          <li>Second reminder with a request to revise.</li>
+          <li>If a pattern continues, the thread closes.</li>
+        </ul>
+        <p>Appeals are welcome through the contact form.</p>
+      </section>
+
+      <section class="section" id="tags">
+        <h2>Tag Set</h2>
+        <p>Use one or two tags per thread: Providence, Law, Worship, Death and Grief, Practice, Metaphysics, Ethics, Scripture.</p>
+      </section>
+
+      <section class="section" id="footer-note">
+        <h2>Purpose</h2>
+        <p class="muted">The Church of Unity exists for honest questions, careful answers, and shared prayer. Thank you for helping this space serve truth and charity.</p>
+      </section>
+    </main>
+    <footer class="footer container">
+      <small>&copy; <span id="year"></span> Church of Unity</small>
+    </footer>
+    <script type="module" src="/main.js"></script>
+  </body>
+ </html>
+
+
+
+
+

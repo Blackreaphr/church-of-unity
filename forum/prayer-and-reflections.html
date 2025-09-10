@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prayer and Reflections | Church of Unity</title>
+    <meta name="description" content="A simple home for prayers and reflections: short readings, questions for practice, and invitations to share." />
+    <meta name="forum-default-category" content="Prayer &amp; Self-Reflection" />
+    <meta name="forum-exclude-self" content="1" />
+    <meta name="theme-color" content="#0b0c10" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/site/meta.js?v=202509101828"></script>
+    <script type="module" src="/site/search.js"></script>
+    <style>
+      /* Forum layout styles (mirrors forum-feed, scoped here) */
+      .forum-filters { position: sticky; top: 62px; z-index: 5; background: rgba(10,11,15,0.75); backdrop-filter: blur(6px); border:1px solid var(--border); border-radius:12px; padding:10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+      .forum-tabs { display:flex; gap:6px; }
+      .forum-tabs .tab { padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:transparent; color:var(--text); cursor:pointer; }
+      .forum-tabs .tab[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: rgba(226,58,75,0.08); }
+      .forum-controls { display:flex; gap:8px; align-items:center; margin-left:auto; }
+      .forum-controls .search-input { width: 240px; }
+      .forum-controls .select, select.select { background:#0a0b0f; color:var(--text); border:1px solid #1a1c22; border-radius:10px; padding:8px 10px; }
+      .forum-grid { display:grid; grid-template-columns: 1fr minmax(240px, 300px); gap: 24px; align-items:start; }
+      .forum-list { display:grid; gap:10px; }
+      .forum-item { border:1px solid var(--border); border-radius:12px; padding:12px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); }
+      .topic-head { display:flex; align-items:center; gap:8px; }
+      .topic-title { margin:0; font-size:1.05rem; }
+      .pill { display:inline-block; font-size:12px; color:var(--muted); border:1px solid #2b2e35; padding:2px 8px; border-radius:999px; }
+      .avatar { width:24px; height:24px; border-radius:50%; background:#222; display:inline-grid; place-items:center; font: 12px/1 var(--font-sans); color:#fff; border:1px solid #2b2e35; }
+      .meta-line { color:var(--muted); font-size: 13px; margin-top: 4px; display:flex; gap:10px; align-items:center; }
+      .rightbar { position: sticky; top: 108px; border:1px solid var(--border); border-radius:12px; padding:12px; background:#0f1116; }
+      .load-sentinel { height: 1px; }
+      .cat-list { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 6px; }
+      .cat-list a { display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: var(--text); border:1px solid var(--border); border-radius:10px; padding:8px 10px; }
+      .cat-list a:hover { background: rgba(255,255,255,0.03); border-color:#333843; }
+      @media (max-width: 960px){ .forum-grid { grid-template-columns: 1fr; } .forum-controls { width:100%; margin-left:0; } .forum-controls .search-input { flex:1; width:auto; }}
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+
+    <header class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <h1 class="site-title">Prayer and Reflections</h1>
+          <p class="tagline">Short readings, honest prayer, steady practice</p>
+        </div>
+      </div>
+    </header>
+
+    <nav class="site-nav" aria-label="Primary"><div class="container nav-inner"><div class="nav-links forum-bar">
+      <a class="home nav-accent" href="/index.html">Home</a><span class="nav-sep" aria-hidden="true">|</span><a class="nav-accent" href="/forum.html">Forum</a><span class="nav-sep" aria-hidden="true">|</span><a class="nav-accent" href="/forum-feed.html?from=prayer">Forum Feed</a>
+    </div><div class="nav-right"><button id="navSearch" class="ghost" aria-label="Search" title="Search" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button></div></div></nav>
+
+    <main id="main" class="container">
+      <section id="intro" class="section dropcap">
+        <p>
+          Prayer is simple and live. We bring real words to God, we receive light and mercy, and we learn to love with patience. Reflections help us see clearly and act with care. This page gathers short pieces and a live feed to serve prayer and practice.
+        </p>
+      </section>
+
+      <section id="prayer-feed" class="section" aria-labelledby="feedLabel">
+        <h2 id="feedLabel" class="visually-hidden">Prayer and Reflections Feed</h2>
+        <div class="forum-filters" role="toolbar" aria-label="Feed filters">
+          <div class="forum-tabs" role="tablist" aria-label="Views">
+            <button class="tab" data-tab="latest" aria-pressed="true">Latest</button>
+            <button class="tab" data-tab="top">Top</button>
+            <button class="tab" data-tab="new">New</button>
+            <button class="tab" data-tab="unanswered">Unanswered</button>
+          </div>
+          <div class="forum-controls">
+            <input id="forumSearch" class="search-input" type="search" placeholder="Search topics" aria-label="Search topics" />
+            <select id="forumCategory" class="select" aria-label="Filter by category">
+              <option value="">All categories</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="forum-grid">
+          <div>
+            <div id="forumList" class="forum-list" role="list"></div>
+            <div id="forumSentinel" class="load-sentinel" aria-hidden="true"></div>
+          </div>
+          <aside class="rightbar" aria-label="Quick links and notes">
+            <h3 style="margin:0 0 8px 0; font-family: var(--font-serif);">Quick Links</h3>
+            <ul class="cat-list" aria-label="Helpful guides">
+              <li><a href="/forum/study-guide-lectio-divina.html"><span>Lectio Divina</span><span class="muted">study guide</span></a></li>
+              <li><a href="/forum/study-guide-examen.html"><span>Daily Examen</span><span class="muted">study guide</span></a></li>
+              <li><a href="/forum/daily-examen-what-changes-with-practice.html"><span>Examen: What changes</span><span class="muted">essay</span></a></li>
+            </ul>
+            <h3 style="margin:14px 0 6px 0; font-family: var(--font-serif);">Invitation</h3>
+            <p class="muted">Share a short prayer or reflection that has helped you. Say why it matters and how you practice it. Keep it plain and kind.</p>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer container">
+      <small>&copy; <span id="year"></span> Church of Unity</small>
+    </footer>
+
+    <script type="module" src="/site/forum.js"></script>
+    <script type="module" src="/main.js"></script>
+  </body>
+ </html>
