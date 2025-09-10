@@ -1,11 +1,6 @@
 name: Deploy Cloudflare Worker
 
 on:
-  push:
-    branches: [ main, master ]
-    paths:
-      - 'cloudflare/stats-worker/**'
-      - '.github/workflows/deploy-cloudflare-worker.yml'
   workflow_dispatch:
 
 jobs:
