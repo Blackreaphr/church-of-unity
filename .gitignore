@@ -11,3 +11,4 @@ tmp*
 *.hex
 *.map
 cloudflare/.devvars
+tools/
