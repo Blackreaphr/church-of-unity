@@ -10,6 +10,7 @@ on:
 
 jobs:
   deploy-worker:
+    if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,4 +31,3 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: cloudflare/stats-worker
           command: deploy --config wrangler.toml
-
