@@ -42,6 +42,13 @@ jobs:
       - name: Build (with version stamping)
         run: npm run build:stamp
 
+      - name: Verify build artifacts
+        run: |
+          echo "Listing dist/ contents:"
+          ls -la dist || true
+          echo "Sample HTML head:"
+          (head -n 40 dist/index.html || true) | sed -n '1,12p'
+
       - name: Install lftp for preflight
         run: sudo apt-get update && sudo apt-get install -y lftp
 
@@ -55,6 +62,12 @@ jobs:
           R: ${{ secrets.HST_REMOTE_DIR }}
         run: |
           set -e
+          echo "Secrets presence (masked):"
+          [ -n "$H" ] && echo "HST_HOST: set" || echo "HST_HOST: MISSING"
+          [ -n "$P" ] && echo "HST_PORT: set" || echo "HST_PORT: MISSING"
+          [ -n "$U" ] && echo "HST_USER: set" || echo "HST_USER: MISSING"
+          if [ -n "$W" ]; then echo "HST_PASS: set"; else echo "HST_PASS: MISSING"; fi
+          [ -n "$R" ] && echo "HST_REMOTE_DIR: set -> $R" || echo "HST_REMOTE_DIR: MISSING"
           echo "Listing remote dir: $R on $H:$P"
           lftp -u "$U","$W" -p "$P" sftp://"$H" -e "set net:timeout 10; set net:max-retries 2; set sftp:auto-confirm yes; cls -la \"$R\"; bye" || {
             echo "Preflight failed. Verify HST_* secrets and HST_REMOTE_DIR path." >&2
