@@ -10,24 +10,27 @@ on:
 
 jobs:
   deploy-worker:
-    if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      RECOVERY_SECRET: ${{ secrets.RECOVERY_SECRET }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set RECOVERY_SECRET (optional)
-        if: ${{ secrets.RECOVERY_SECRET != '' }}
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.RECOVERY_SECRET != '' }}
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
           workingDirectory: cloudflare/stats-worker
           # Pipe secret to avoid echoing in logs; '-y' skips prompt
-          command: secret put RECOVERY_SECRET --config wrangler.toml --text "${{ secrets.RECOVERY_SECRET }}"
+          command: secret put RECOVERY_SECRET --config wrangler.toml --text "${{ env.RECOVERY_SECRET }}"
 
       - name: Deploy Worker
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' }}
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
           workingDirectory: cloudflare/stats-worker
           command: deploy --config wrangler.toml
