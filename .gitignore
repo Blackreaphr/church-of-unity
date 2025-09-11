@@ -5,7 +5,6 @@ dist/
 .env
 *.local
 .wrangler/
-package-lock.json
 tmp*
 *.tmp
 *.hex
