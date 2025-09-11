@@ -3,9 +3,21 @@ name: Deploy to Hostinger (SFTP)
 on:
   push:
     branches: [ main, master ]
-    paths-ignore:
-      - 'cloudflare/**'
-      - '.github/workflows/deploy-cloudflare-worker.yml'
+    paths:
+      - 'assets/**'
+      - 'site/**'
+      - 'scripts/**'
+      - 'essays/**'
+      - 'forum/**'
+      - 'forum-feed/**'
+      - 'guides/**'
+      - '*.html'
+      - 'styles.css'
+      - 'main.js'
+      - 'vite.config.*'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/deploy-hostinger.yml'
   workflow_dispatch:
 
 jobs:
