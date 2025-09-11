@@ -106,7 +106,7 @@ export default {
       const service = parts[1] || '';
       const action = parts[2] || '';
 
-      if (service === 'stats' && action === 'health') {
+      if (service === 'stats' && (action === 'health' || action === 'ping')) {
         return new Response(JSON.stringify({ ok: true }), { headers: baseHeaders });
       }
 
