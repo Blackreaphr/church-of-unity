@@ -24,6 +24,9 @@ jobs:
       - name: Build (with version stamping)
         run: npm run build:stamp
 
+      - name: Install lftp for preflight
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
       - name: Preflight SFTP (check remote dir)
         shell: bash
         env:
