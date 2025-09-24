@@ -66,7 +66,13 @@ export default {
         return out;
       }
 
-      function cookieHeader(name, value, { https, partitioned } = {}) {
+      /**
+       * @param {string} name
+       * @param {string} value
+       * @param {{https?: boolean, partitioned?: boolean}} [opts]
+       */
+      function cookieHeader(name, value, opts = {}) {
+        const { https, partitioned } = opts;
         const maxAge = 60 * 60 * 24 * 365; // ~1 year
         // Use SameSite=None to allow cross-site dev (localhost -> domain) and ensure Secure for HTTPS
         let str = `${name}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; SameSite=None`;
@@ -699,4 +705,5 @@ export default {
     }
   }
 };
+
 

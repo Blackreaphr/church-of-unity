@@ -1,4 +1,4 @@
-async function loadIndex() {
+﻿async function loadIndex() {
   try {
     const res = await fetch('/data/forum-posts.json', { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to load forum index');
@@ -11,6 +11,27 @@ async function loadIndex() {
 }
 
 const norm = (s) => (s || '').toLowerCase();
+function canonicalUrl(u) {
+  try {
+    if (!u) return u;
+    let v = u;
+    // Prefer extensionless URLs for forum posts by dropping .html
+    if (/^\/forum\/.+\.html(\?.*)?$/i.test(v)) {
+      v = v.replace(/\.html(\?.*)?$/i, '$1');
+    }
+    // For forum routes, prefer trailing slash to ensure directory index resolution
+    if (/^\/forum\//i.test(v)) {
+      const m = v.match(/^[^?#]+/); // path portion only
+      const pathOnly = m ? m[0] : v;
+      if (pathOnly && !pathOnly.endsWith('/')) {
+        // Insert trailing slash before any query/hash
+        const suffix = v.slice(pathOnly.length);
+        v = pathOnly + '/' + suffix;
+      }
+    }
+    return v;
+  } catch { return u; }
+}
 const byDateDesc = (a, b) => (b || '').localeCompare(a || '');
 function uniq(arr) { return Array.from(new Set(arr)); }
 function uniqCategories(posts) { return uniq(posts.map(p => p.category).filter(Boolean)).sort(); }
@@ -76,7 +97,7 @@ function sortAndFilter(posts, state) {
   const isWelcome = (p) => {
     const u = (p.url || '').toLowerCase();
     const t = (p.title || '').toLowerCase().trim();
-    return u.endsWith('/forum/welcome.html') || t === 'welcome to the forum' || t.startsWith('welcome to the forum');
+    return u.endsWith('/forum-start/') || t === 'welcome to the forum' || t.startsWith('welcome to the forum');
   };
 
   const ordered = pinned.concat(rest);
@@ -90,21 +111,23 @@ function sortAndFilter(posts, state) {
 
 function renderChunk(listEl, chunk) {
   const html = chunk.map(p => {
+    const href = canonicalUrl(p.url || '');
     const cat = p.category ? `<span class="pill">${p.category}</span>` : '';
     const replies = (p.replies || 0) + ' replies';
-    const last = timeAgo(p.lastReplyAt || p.date);
+    const iso = p.lastReplyAt || p.date;
+    const last = timeAgo(iso);
     const name = p.starter || 'Member';
     const av = (name || '?').trim().charAt(0).toUpperCase();
     return `
     <article class="forum-item" role="listitem">
       <div class="topic-head">
         <span class="avatar" aria-hidden="true">${av}</span>
-        <h3 class="topic-title"><a href="${p.url}">${p.title}</a></h3>
+        <h3 class="topic-title"><a href="${href}">${p.title}</a></h3>
         ${cat}
       </div>
       <div class="meta-line">
         <span class="muted">${name}</span>
-        <span class="muted">&bull; ${last}</span>
+        <span class="muted">&bull; <time class="reltime" datetime="${iso}" aria-label="${new Date(iso).toLocaleString()}">${last}</time></span>
         <span class="muted">&bull; ${replies}</span>
       </div>
       ${p.excerpt ? `<p>${p.excerpt}</p>` : ''}
@@ -140,11 +163,13 @@ async function main() {
       return `<li><a href="#" data-cat="${c}"><span>${c}</span><span class="muted">${count}</span></a></li>`;
     }).join('');
     catList.addEventListener('click', (e) => {
-      const a = e.target.closest('a[data-cat]');
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      const a = t.closest('a[data-cat]');
       if (!a) return;
       e.preventDefault();
       const val = a.getAttribute('data-cat') || '';
-      catSel.value = val;
+      if (catSel instanceof HTMLSelectElement) catSel.value = val;
       state.category = val;
       resetAndRender();
     });
@@ -152,14 +177,21 @@ async function main() {
 
   // Initialize state from URL query params and optional meta default
   const params = new URLSearchParams(location.search);
-  const metaDefaultCat = (document.querySelector('meta[name="forum-default-category"]')?.content || '').trim();
+  const metaDefaultCat = ((document.querySelector('meta[name="forum-default-category"]')?.getAttribute('content')) || '').trim();
   const allowedTabs = new Set(['latest','top','new','unanswered']);
   const initialTab = params.get('tab') || 'latest';
   const catSlugParam = (params.get('cat') || '').trim();
   const legacyCategoryParam = (params.get('category') || '').trim();
   const unslug = (slug) => categories.find(c => slugifyCategory(c) === norm(slug)) || '';
 
-  const initialCategory = legacyCategoryParam || (catSlugParam ? unslug(catSlugParam) : '') || metaDefaultCat || '';
+  let initialCategory = legacyCategoryParam || (catSlugParam ? unslug(catSlugParam) : '') || metaDefaultCat || '';
+  // Path-based defaults for virtual subroutes
+  try {
+    const p = (location.pathname || '').toLowerCase();
+    if (!initialCategory && p.startsWith('/forum-feed/study-guides')) {
+      initialCategory = 'Study Guides';
+    }
+  } catch {}
   const state = {
     q: params.get('q') || '',
     category: initialCategory,
@@ -204,13 +236,16 @@ async function main() {
     state.page = 0;
     filtered = sortAndFilter(SOURCE_POSTS, state);
     // reflect filters in UI
-    if (search) search.value = state.q;
-    if (catSel) {
+    if (search instanceof HTMLInputElement) search.value = state.q;
+    if (catSel instanceof HTMLSelectElement) {
       // Ensure value exists in options; otherwise reset to ''
       const values = Array.from(catSel.options).map(o => o.value);
       catSel.value = values.includes(state.category) ? state.category : '';
     }
-    tabs.forEach(b => b.setAttribute('aria-pressed', b.dataset.tab === state.tab ? 'true' : 'false'));
+    tabs.forEach(b => {
+      const tab = b.getAttribute('data-tab') || '';
+      b.setAttribute('aria-pressed', tab === state.tab ? 'true' : 'false');
+    });
     syncUrl();
     loadMore();
   }
@@ -221,19 +256,21 @@ async function main() {
     if (!next.length) return;
     renderChunk(list, next);
     state.page++;
+    // Update relative times after injecting new content
+    updateRelativeTimes();
   }
 
   tabs.forEach(btn => {
     btn.addEventListener('click', () => {
       tabs.forEach(b => b.setAttribute('aria-pressed', 'false'));
       btn.setAttribute('aria-pressed', 'true');
-      state.tab = btn.dataset.tab;
+      state.tab = btn.getAttribute('data-tab') || 'latest';
       resetAndRender();
     });
   });
 
-  if (search) search.addEventListener('input', () => { state.q = search.value; resetAndRender(); });
-  if (catSel) catSel.addEventListener('change', () => { state.category = catSel.value; resetAndRender(); });
+  if (search instanceof HTMLInputElement) search.addEventListener('input', () => { state.q = search.value; resetAndRender(); });
+  if (catSel instanceof HTMLSelectElement) catSel.addEventListener('change', () => { state.category = catSel.value; resetAndRender(); });
 
   const io = new IntersectionObserver((entries) => {
     if (entries.some(e => e.isIntersecting)) loadMore();
@@ -242,12 +279,38 @@ async function main() {
 
   // Apply initial state to UI before first render
   // Add category options now so select can reflect initial category
-  if (state.category) catSel.value = state.category;
+  if (state.category && (catSel instanceof HTMLSelectElement)) catSel.value = state.category;
   // Set initial tab button state
-  tabs.forEach(b => b.setAttribute('aria-pressed', b.dataset.tab === state.tab ? 'true' : 'false'));
+  tabs.forEach(b => {
+    const tab = b.getAttribute('data-tab') || '';
+    b.setAttribute('aria-pressed', tab === state.tab ? 'true' : 'false');
+  });
   // Set initial search text
-  if (state.q) search.value = state.q;
+  if (state.q && (search instanceof HTMLInputElement)) search.value = state.q;
   resetAndRender();
+
+  // Live-update all relative time displays so they don't become stale
+  function updateRelativeTimes(){
+    try {
+      const els = document.querySelectorAll('time.reltime[datetime]');
+      els.forEach(el => {
+        const iso = el.getAttribute('datetime') || '';
+        if (!iso) return;
+        el.textContent = timeAgo(iso);
+      });
+    } catch {}
+  }
+  // Update every minute and whenever the tab becomes visible
+  updateRelativeTimes();
+  const RELTIME_MS = 60 * 1000;
+  let reltimeTimer = setInterval(updateRelativeTimes, RELTIME_MS);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updateRelativeTimes();
+      clearInterval(reltimeTimer);
+      reltimeTimer = setInterval(updateRelativeTimes, RELTIME_MS);
+    }
+  });
 
   // Copy template helper
   const copyBtn = document.getElementById('copyTemplate');
@@ -262,6 +325,8 @@ async function main() {
       } catch (_) {}
     });
   }
+
+  try { /** @type {any} */ (window).__forumLoaded = true; } catch (_) {}
 }
 
 if (document.readyState === 'loading') {
@@ -269,3 +334,6 @@ if (document.readyState === 'loading') {
 } else {
   main();
 }
+
+
+

@@ -1,4 +1,4 @@
-// Church of Unity - dynamic visuals and interactions
+﻿// Church of Unity - dynamic visuals and interactions
 
 (() => {
   const $ = (s, p = document) => p.querySelector(s);
@@ -11,13 +11,24 @@
   (function navEnhance(){
     const links = document.querySelectorAll('.site-nav a[href]');
     const here = new URL(location.href);
+    const canon = (p) => {
+      try {
+        if (!p) return '/';
+        // /index.html -> /
+        p = p.replace(/\/index\.html?$/i, '/');
+        // *.html -> *
+        p = p.replace(/\.html?$/i, '');
+        // remove trailing slash (except root)
+        if (p !== '/' && p.endsWith('/')) p = p.slice(0, -1);
+        return p || '/';
+      } catch { return p; }
+    };
+    const herePath = canon(here.pathname);
     links.forEach(a => {
       try {
         const url = new URL(a.getAttribute('href'), here.origin);
-        const normalize = p => p.replace(/index\.html$/, '').replace(/\/$/, '');
-        if (normalize(url.pathname) === normalize(here.pathname)) {
-          a.setAttribute('aria-current', 'page');
-        } else if (here.pathname === '/' && (url.pathname.endsWith('/index.html') || url.pathname === '/')) {
+        const linkPath = canon(url.pathname);
+        if (linkPath === herePath) {
           a.setAttribute('aria-current', 'page');
         }
       } catch {}
@@ -25,7 +36,8 @@
     // Close <details> when clicking outside
     document.addEventListener('click', (e) => {
       document.querySelectorAll('details.more[open]').forEach(d => {
-        if (!d.contains(e.target)) d.removeAttribute('open');
+        const tgt = e.target;
+        if (!(tgt instanceof Node) || !d.contains(tgt)) d.removeAttribute('open');
       });
     });
 
@@ -43,10 +55,52 @@
       // open when focusing summary via keyboard
       const summary = more.querySelector('summary');
       summary?.addEventListener('focus', () => more.setAttribute('open', ''));
-      more.addEventListener('focusout', (e) => {
-        if (!more.contains(e.relatedTarget)) more.removeAttribute('open');
+      more.addEventListener('focusout', (/** @type {FocusEvent} */ e) => {
+        const rt = e.relatedTarget;
+        if (!(rt instanceof Node) || !more.contains(rt)) more.removeAttribute('open');
       });
     }
+  })();
+
+  // Normalize 'More' menu order across pages (keep Purgatory 6th)
+  (function moreMenuOrder(){
+    try {
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          const menus = document.querySelectorAll('.more-menu');
+          if (!menus.length) return;
+          const desiredOrder = [
+            '/divine-law.html',
+            '/philosophy.html',
+            '/chaos-order.html',
+            '/fate-destiny.html',
+            '/heaven-hell-journey.html',
+            // Keep purgatory fixed at 6th position
+            '/purgatory.html',
+            '/names-of-god.html',
+            '/sermons.html',
+            '/glossary.html',
+            '/about.html#governance'
+          ];
+          const norm = (href) => {
+            try {
+              const u = new URL(href, location.origin);
+              return u.pathname + (u.hash || '');
+            } catch {
+              return href || '';
+            }
+          };
+          menus.forEach(menu => {
+            const links = Array.from(menu.querySelectorAll('a[href]'));
+            desiredOrder.forEach(href => {
+              const want = norm(href);
+              const a = links.find(x => norm(x.getAttribute('href')) === want);
+              if (a) menu.appendChild(a);
+            });
+          });
+        } catch {}
+      });
+    } catch {}
   })();
 
   // === Emblem: spiral generation + warp intensity ===
@@ -288,6 +342,7 @@
     const stats = document.querySelectorAll('.site-stats .stat');
     if (!stats.length) return;
 
+    /** @type {HTMLElement|null} */
     const statsBlock = document.querySelector('.site-stats');
     const allowMotion = statsBlock?.dataset?.allowMotion === '1';
     const prefersReduced = !allowMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -311,8 +366,9 @@
     }
 
     stats.forEach(stat => {
-      const numEl = stat.querySelector('.stat-number');
-      if (!numEl) return;
+      const numRaw = stat.querySelector('.stat-number');
+      if (!numRaw) return;
+      const numEl = /** @type {HTMLElement & { __countAnim?: { stopped: boolean, cancel: () => void } }} */ (numRaw);
       const target = stat.getAttribute('data-target') || numEl.textContent || '0';
 
       // Allow re-trigger on every interaction; cancel any in-flight animation
@@ -419,3 +475,4 @@
     }
   });
 })();
+

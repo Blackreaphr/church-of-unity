@@ -1,0 +1,238 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Church of Unity | A Path Between Tradition and Clarity</title>
+    <meta name="description" content="The Church of Unity stands at the meeting point of faith and philosophy, pursuing truth through unity, clarity, and shared inquiry." />
+    <meta name="theme-color" content="#0b0c10" />
+    <meta name="color-scheme" content="dark light" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="/assets/symbol.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site-gNYj6CAS.webmanifest?v=202509140849" />
+    <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX-Cb4h8HOd.js?v=202509140849"></script>
+    <script type="module" crossorigin src="/site/search.js?v=202509140849"></script>
+    <script type="module" crossorigin src="/assets/main-0Bs8q2ly.js?v=202509140849"></script>
+    <link rel="stylesheet" crossorigin href="/assets/main-8BzZRDYf-BkpYbJge.css?v=202509140849">
+      <script type="module" data-cfasync="false" src="/site/stats.js?v=202509140849"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+
+    <header class="hero">
+      <div class="container hero-inner">
+                        <div class="symbol-wrap" aria-hidden="true">
+          <img id="emblem" class="symbol" src="/assets/symbol.svg" alt="" loading="lazy" decoding="async" />
+        </div>
+        <div class="hero-copy">
+          <h1 class="site-title">Church of Unity</h1>
+          <p class="tagline">A Path Between Tradition and Clarity</p>
+          <div class="hero-actions">
+            <button id="toggleAudio" class="ghost">Soundscape: Off</button>
+            <button id="toggleReflection" class="ghost">Open Reflection Space</button>
+            <button id="joinBtn" class="ghost" aria-label="Join Unity">Join Unity</button>
+            <button id="restoreBtn" class="ghost" aria-label="Restore membership">Restore Membership</button>
+            <button id="getRecoveryBtn" class="ghost" aria-label="Get recovery code" style="display:none">Get Recovery Code</button>
+          </div>
+          <div id="recoveryArea" class="callout" hidden>
+            <p><strong>Your Recovery Code:</strong> <span id="recoveryText" style="font-family: monospace; user-select: all;">â</span>
+              <button id="copyRecoveryBtn" class="ghost" style="margin-left:8px">Copy</button>
+            </p>
+            <p class="muted" style="margin-top:6px">Save this code. If you ever clear cookies or switch devices, use Restore Membership and paste this code to avoid double-counting.</p>
+          </div>
+          <div class="site-stats" aria-label="Community stats" data-allow-motion="1">
+            <div class="stat" tabindex="0" role="button" aria-label="Members: 60" data-target="60">
+              <div class="stat-number-wrap">
+                <span class="stat-number" id="memberCount">60</span>
+              </div>
+              <span class="stat-label">Members</span>
+            </div>
+            <div class="stat" tabindex="0" role="button" aria-label="Views: 407" data-target="407">
+              <div class="stat-number-wrap">
+                <span class="stat-number" id="viewCount">407</span>
+              </div>
+              <span class="stat-label">Views</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+<script><!-- join-inline-handler -->
+(function(){
+  try{
+    var btn=document.getElementById('joinBtn');
+    if(!btn) return;
+    var ns=(location.hostname||'').toLowerCase().replace(/^www\./,'');
+    function setJoinedUI(){
+      try{ localStorage.setItem('co:joined','1'); }catch(e){}
+      try{ btn.textContent='Joined(Member)'; btn.setAttribute('aria-label','Joined(Member)'); btn.classList.add('joined'); btn.disabled=true; }catch(e){}
+      try{ var r=document.getElementById('restoreBtn'); if(r) r.style.display='none'; var g=document.getElementById('getRecoveryBtn'); if(g) g.style.display=''; }catch(e){}
+    }
+    btn.addEventListener('click', function(){
+      if (btn.disabled) return;
+      btn.disabled=true; var prev=btn.textContent; btn.textContent='Joining...';
+      fetch('/api/stats/join/'+encodeURIComponent(ns), { credentials: 'include' })
+        .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error(String(r.status))); })
+        .then(function(){ setJoinedUI(); })
+        .catch(function(){ btn.textContent='Try again'; btn.disabled=false; setTimeout(function(){ if(!localStorage.getItem('co:joined')) btn.textContent=prev||'Join Unity'; }, 1500); });
+    });
+  }catch(e){}
+})();
+</script>
+
+    <script>
+      (function(){
+        try{
+          var btn=document.getElementById('joinBtn');
+          var restoreBtn=document.getElementById('restoreBtn');
+          var getCodeBtn=document.getElementById('getRecoveryBtn');
+          function setJoinedUI(joined){
+            if(!btn) return;
+            if(joined){
+              btn.textContent='Joined(Member)';
+              btn.setAttribute('aria-label','Joined(Member)');
+              btn.classList.add('joined');
+              btn.disabled=true;
+              if(restoreBtn) restoreBtn.style.display='none';
+              if(getCodeBtn) getCodeBtn.style.display='';
+            }
+          }
+          var joined=false; try{ joined=!!localStorage.getItem('co:joined'); }catch(e){}
+          setJoinedUI(joined);
+        }catch(e){}
+      })();
+    </script>
+        <nav class="site-nav" aria-label="Primary">
+      <div class="container nav-inner">
+        <div class="nav-links">
+          <a class="home" href="/index.html">Home</a>
+          <a href="/start-here.html">Start Here</a>
+          <a href="/practice.html">Practice</a>
+          <a href="/texts-library.html">Texts</a>
+          <a href="/inquiry-forum.html">Inquiry</a>
+          <a href="/forum.html">Forum</a>
+          <a href="/about.html">About</a>
+          <details class="more">
+            <summary>More</summary>
+            <div class="more-menu" role="menu">
+              <a role="menuitem" href="/divine-law.html">Divine Law</a>
+              <a role="menuitem" href="/philosophy.html">Philosophy</a>
+              <a role="menuitem" href="/chaos-order.html">Chaos and Order</a>
+              <a role="menuitem" href="/fate-destiny.html">Fate and Destiny</a>
+              <a role="menuitem" href="/heaven-hell-journey.html">Heaven, Hell, and the Human Journey</a>
+              <a role="menuitem" href="/names-of-god.html">The Many Names of God</a>
+              <a role="menuitem" href="/sermons.html">Sermons and Reflections</a>
+              <a role='menuitem' href='/purgatory.html'>Purgatory</a>
+              <a role="menuitem" href="/glossary.html">Glossary</a>
+              <a role="menuitem" href="/about.html#governance">Governance</a>
+            </div>
+          </details>
+        </div>
+        <div class="nav-right">
+          <button id="navSearch" class="ghost" aria-label="Search" title="Search" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main id="main" class="container">
+      
+      <section class="section" id="brief-statement">
+        <h2>A Brief Statement of Unity</h2>
+        <p>God is one. All that exists participates in the good that flows from God.</p>
+        <p>Heaven is friendship with God, begun now through grace. Hell is the refusal of that friendship.</p>
+        <p>The moral law is revealed by God and written within human hearts, yet it reaches us through human language and history. The Ten Commandments are received as covenantal gifts that teach us how to love God and neighbor.</p>
+        <p>God is known by many names. These names describe real aspects of the one divine life. When we speak of âarms,â we speak about missions and attributes.</p>
+        <p>Human freedom is real. Providence sustains creation without erasing our agency. Our choices shape character now and bear weight in eternity.</p>
+        <p>Chaos and order are both present in the world. Wisdom seeks their right relation through study, prayer, and action.</p>
+        <p>Death is a passage. Lifeâs meaning is clarified by how we love, repent, and hope.</p>
+        <p>The Church of Unity learns from Catholic and Christian sources and welcomes philosophical conversation that serves truth and charity.</p>
+      </section>
+
+
+
+      <section class="section" id="quick-starts">
+        <h2>Start a Conversation</h2>
+        <p class="muted">Seeds for inquiry with the Guide:</p>
+        <ul>
+          <li>âExplain how the Church of Unity understands the Ten Commandments.â</li>
+          <li>âOffer two models of providence and human freedom.â</li>
+          <li>âHow can yin and yang help me think about Christian ideas of creation and fall?â</li>
+          <li>âWhat practice can help me face death with hope?â</li>
+        </ul>
+      </section>
+      <section class="section dropcap">
+        <p class="lead">
+          The Church of Unity stands at the meeting point of faith and philosophy. We receive the wisdom of Catholic and Christian tradition and seek its heart with care. Our aim is truthful unity, a clear acknowledgment of the divine that invites understanding and shared life.
+        </p>
+      </section>
+
+      <section class="section dropcap" id="interplay">
+        <h2>The Interplay of Chaos and Order</h2>
+        <p>
+          Reality unfolds with structure and surprise. Order shapes. Chaos quickens. Each lends meaning to the other. Unity looks for the rhythm between them through patience, courage, and discernment.
+        </p>
+      </section>
+
+      <section class="section dropcap" id="faith">
+        <h2>Faith Without Ornament</h2>
+        <p>
+          Ritual carries power when it is understood. We choose a simple path of reflection, study, and action. Faith matures as thought, word, and deed come together. In that meeting, the divine becomes present within both structure and fracture.
+        </p>
+      </section>
+
+      <section class="section dropcap" id="community">
+        <h2>A Community of Inquiry</h2>
+        <p>
+          We gather as seekers and partners in inquiry. The Church of Unity welcomes careful questions and shared learning. We examine Scripture, philosophy, and lived experience with equal seriousness. Our dialogue continues, our texts remain open, and our practice grows through humility and charity.
+        </p>
+      </section>
+
+      <section class="section dropcap" id="invitation">
+        <h2>An Open Invitation</h2>
+        <p>
+          We invite all who wish to face uncertainty with clarity and hope. Stand within the tension of chaos and order, faith and reason, past and future. Unity honors difference and cultivates harmony where difference is recognized and held together.
+        </p>
+      </section>
+
+      
+
+      <section id="reflection" class="section reflection hidden" aria-live="polite">
+        <h2>Reflection Space</h2>
+        <p class="muted">Drag, click, or press to influence the field. Use the button above to close.</p>
+        <div class="reflect-wrap">
+          <canvas id="reflectCanvas" width="900" height="520" aria-label="Interactive reflection canvas"></canvas>
+          <div class="reflect-controls">
+            <label>Balance (Order â Chaos)
+              <input type="range" id="balance" min="0" max="100" value="35" />
+            </label>
+            <button id="clearReflect" class="ghost">Clear</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer container">
+      <small>&copy; <span id="year"></span> Church of Unity &middot; Built for clarity and unity</small>
+      <noscript><div class="muted">Note: Enable JavaScript to experience the emblem, background, and reflection space.</div></noscript>
+    </footer>
+
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"ee8a4ca31eb149a9b95bfa6a5098eb55","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+  
+</html>
+
+
+
+
+
+
+
+

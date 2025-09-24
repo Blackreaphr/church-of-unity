@@ -1,0 +1,59 @@
+*** Begin Patch
+*** Update File: site/meta.js
+@@
+-  // Highlight active nav link and avoid always-highlighting Home
++  // Highlight active nav link and avoid always-highlighting Home
+   try {
+-    const normalize = (p) => (p === '/' || p === '' ? '/index.html' : p);
+-    const current = normalize(location.pathname);
+-    const links = document.querySelectorAll('.site-nav a[href]');
+-    links.forEach((a) => {
+-      const hrefPath = normalize(new URL(a.getAttribute('href'), location.origin).pathname);
+-      if (hrefPath === current) {
+-        a.setAttribute('aria-current', 'page');
+-      } else {
+-        a.removeAttribute('aria-current');
+-      }
+-    });
+-    const home = document.querySelector('.site-nav a.home');
+-    if (home) {
+-      if (current !== '/index.html') {
+-        home.classList.remove('home');
+-      } else {
+-        if (!home.classList.contains('home')) home.classList.add('home');
+-      }
+-    }
++    const canon = (p) => {
++      try {
++        if (!p) return '/';
++        // /index.html -> /
++        p = p.replace(/\/index\.html?$/i, '/');
++        // *.html -> *
++        p = p.replace(/\.html?$/i, '');
++        // remove trailing slash (except root)
++        if (p !== '/' && p.endsWith('/')) p = p.slice(0, -1);
++        return p || '/';
++      } catch { return p; }
++    };
++    const current = canon(location.pathname);
++    const links = document.querySelectorAll('.site-nav a[href]');
++    links.forEach((a) => {
++      const hrefPath = canon(new URL(a.getAttribute('href'), location.origin).pathname);
++      if (hrefPath === current) {
++        a.setAttribute('aria-current', 'page');
++      } else {
++        a.removeAttribute('aria-current');
++      }
++    });
++    const home = document.querySelector('.site-nav a.home');
++    if (home) {
++      if (current !== '/') {
++        home.classList.remove('home');
++      } else if (!home.classList.contains('home')) {
++        home.classList.add('home');
++      }
++    }
+   } catch (_) {
+     // no-op
+   }
+*** End Patch

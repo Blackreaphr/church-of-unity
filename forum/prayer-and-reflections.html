@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -9,11 +9,15 @@
     <meta name="forum-exclude-self" content="1" />
     <meta name="theme-color" content="#0b0c10" />
     <meta name="color-scheme" content="dark light" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <link rel="stylesheet" href="/styles.css" />
-    <script type="module" src="/site/meta.js?v=202509101828"></script>
-    <script type="module" src="/site/search.js"></script>
+    <link rel="manifest" href="/site-gNYj6CAS.webmanifest" />`n    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="icon" href="/assets/symbol.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/symbol-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/symbol-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/symbol-180.png" />
     <style>
+      .forum-hero-actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+      .btn-primary { background: var(--accent); color:#fff; border:1px solid var(--accent); padding:8px 12px; border-radius:10px; text-decoration:none; display:inline-block; }
+      .btn-primary:hover { filter: brightness(1.08); }
       /* Forum layout styles (mirrors forum-feed, scoped here) */
       .forum-filters { position: sticky; top: 62px; z-index: 5; background: rgba(10,11,15,0.75); backdrop-filter: blur(6px); border:1px solid var(--border); border-radius:12px; padding:10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
       .forum-tabs { display:flex; gap:6px; }
@@ -33,10 +37,19 @@
       .rightbar { position: sticky; top: 108px; border:1px solid var(--border); border-radius:12px; padding:12px; background:#0f1116; }
       .load-sentinel { height: 1px; }
       .cat-list { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 6px; }
-      .cat-list a { display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: var(--text); border:1px solid var(--border); border-radius:10px; padding:8px 10px; }
+      .cat-list a { display: flex; align-items: center; justify-content: space-between; text-decoration: none !important; color: var(--text); border:1px solid var(--border); border-radius:10px; padding:8px 10px; }
       .cat-list a:hover { background: rgba(255,255,255,0.03); border-color:#333843; }
+      /* Underline only the title part on hover; never the label */
+      .cat-list a .link-title { text-decoration: none; }
+      .cat-list a:hover .link-title { text-decoration: underline; text-underline-offset: 2px; }
+      .cat-list a .muted { text-decoration: none; }
       @media (max-width: 960px){ .forum-grid { grid-template-columns: 1fr; } .forum-controls { width:100%; margin-left:0; } .forum-controls .search-input { flex:1; width:auto; }}
     </style>
+    <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
+    <script type="module" src="/site/search.js?v=202509112130"></script>
+    <script type="module" data-cfasync="false" src="/site/forum.js"></script>
+    <script type="module" data-cfasync="false" src="/main.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/main-8BzZRDYf.css">
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -44,9 +57,13 @@
 
     <header class="hero">
       <div class="container hero-inner">
+                        <div class="symbol-wrap" aria-hidden="true">
+          <img id="emblem" class="symbol" src="/assets/symbol.svg" alt="" loading="lazy" decoding="async" />
+        </div>
         <div class="hero-copy">
           <h1 class="site-title">Prayer and Reflections</h1>
           <p class="tagline">Short readings, honest prayer, steady practice</p>
+          <div class="forum-hero-actions"><a class="btn-primary" href="/forum-start/">Start a Topic</a></div>
         </div>
       </div>
     </header>
@@ -89,9 +106,9 @@
           <aside class="rightbar" aria-label="Quick links and notes">
             <h3 style="margin:0 0 8px 0; font-family: var(--font-serif);">Quick Links</h3>
             <ul class="cat-list" aria-label="Helpful guides">
-              <li><a href="/forum/study-guide-lectio-divina.html"><span>Lectio Divina</span><span class="muted">study guide</span></a></li>
-              <li><a href="/forum/study-guide-examen.html"><span>Daily Examen</span><span class="muted">study guide</span></a></li>
-              <li><a href="/forum/daily-examen-what-changes-with-practice.html"><span>Examen: What changes</span><span class="muted">essay</span></a></li>
+              <li><a href="/forum/study-guide-lectio-divina.html"><span class="link-title">Lectio Divina</span><span class="muted">study guide</span></a></li>
+              <li><a href="/forum/study-guide-examen.html"><span class="link-title">Daily Examen</span><span class="muted">study guide</span></a></li>
+              <li><a href="/forum/daily-examen-what-changes-with-practice.html"><span class="link-title">Examen: What changes</span><span class="muted">essay</span></a></li>
             </ul>
             <h3 style="margin:14px 0 6px 0; font-family: var(--font-serif);">Invitation</h3>
             <p class="muted">Share a short prayer or reflection that has helped you. Say why it matters and how you practice it. Keep it plain and kind.</p>
@@ -104,7 +121,11 @@
       <small>&copy; <span id="year"></span> Church of Unity</small>
     </footer>
 
-    <script type="module" src="/site/forum.js"></script>
-    <script type="module" src="/main.js"></script>
   </body>
  </html>
+
+
+
+
+
+

@@ -4,19 +4,22 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Study Guides | Church of Unity</title>
-    <meta name="description" content="Guides for practice and study." />
+    <meta name="description" content="Discuss study guides: questions, insights, and tips." />
     <meta name="theme-color" content="#0b0c10" />
     <meta name="color-scheme" content="dark light" />
+    <meta name="forum-nav-no-feed" content="1" />
     <meta name="forum-default-category" content="Study Guides" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="/assets/symbol.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <script type="module" src="/site/meta.js?v=202509101828"></script>
-    <script type="module" src="/site/search.js"></script>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="/assets/symbol.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site-gNYj6CAS.webmanifest" />
     <style>
+      .forum-hero-actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+      .btn-primary { background: var(--accent); color:#fff; border:1px solid var(--accent); padding:8px 12px; border-radius:10px; text-decoration:none; display:inline-block; }
+      .btn-primary:hover { filter: brightness(1.08); }
+      .chevron-down { display:block; margin-top: 18px; color: var(--muted); text-decoration:none; }
+      .chevron-down:hover { color: var(--accent); }
       .forum-filters { position: sticky; top: 62px; z-index: 5; background: rgba(10,11,15,0.75); backdrop-filter: blur(6px); border:1px solid var(--border); border-radius:12px; padding:10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
       .forum-tabs { display:flex; gap:6px; }
       .forum-tabs .tab { padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:transparent; color:var(--text); cursor:pointer; }
@@ -40,45 +43,22 @@
       .code-snippet { background:#0a0b0f; border:1px solid var(--border); border-radius:10px; padding:10px; overflow:auto; max-height: 260px; }
       @media (max-width: 960px){ .forum-grid { grid-template-columns: 1fr; } .forum-controls { width:100%; margin-left:0; } .forum-controls .search-input { flex:1; width:auto; }}
     </style>
+    <script type="module" data-cfasync="false" src="/site/forum.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/main-8BzZRDYf.css">
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <canvas id="bgCanvas" aria-hidden="true"></canvas>
+
     <header class="hero">
       <div class="container hero-inner">
-        <div class="symbol-wrap" aria-hidden="true">
-          <svg id="emblem" class="symbol" viewBox="0 0 200 200" role="img" aria-label="Animated emblem">
-            <defs>
-              <filter id="warp" x="-20%" y="-20%" width="140%" height="140%">
-                <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.001" numOctaves="2" seed="4" result="noise"/>
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
-              </filter>
-              <linearGradient id="strokeGrad" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0%" stop-color="#e23a4b"/>
-                <stop offset="100%" stop-color="#ffffff"/>
-              </linearGradient>
-            </defs>
-            <g id="ordered" stroke="url(#strokeGrad)" stroke-width="2.2" fill="none">
-              <circle cx="100" cy="100" r="78" opacity="0.8"/>
-              <circle cx="100" cy="100" r="52" opacity="0.55" stroke-dasharray="2 6"/>
-              <g id="radials" opacity="0.45">
-                <line x1="100" y1="24" x2="100" y2="176"/>
-                <line x1="24" y1="100" x2="176" y2="100"/>
-                <line x1="38" y1="38" x2="162" y2="162"/>
-                <line x1="162" y1="38" x2="38" y2="162"/>
-              </g>
-            </g>
-            <g id="spiralWrap" filter="url(#warp)">
-              <path id="spiral" d="" stroke="url(#strokeGrad)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-            </g>
-          </svg>
+                        <div class="symbol-wrap" aria-hidden="true">
+          <img id="emblem" class="symbol" src="/assets/symbol.svg" alt="" loading="lazy" decoding="async" />
         </div>
         <div class="hero-copy">
           <h1 class="site-title">Study Guides</h1>
-          <p class="tagline">Guides for practice and study</p>
-          <div class="forum-hero-actions">
-            <a class="btn-primary" href="/forum/welcome.html">Start a topic</a>
-          </div>
+          <p class="tagline">Discuss study guides: questions, insights, and tips.</p>
+          <div class="forum-hero-actions"><a class="btn-primary" href="/forum-start/">Start a Topic</a></div>
         </div>
       </div>
     </header>
@@ -86,7 +66,7 @@
     <nav class="site-nav" aria-label="Primary">
       <div class="container nav-inner">
         <div class="nav-links forum-bar">
-          <a class="home nav-accent" href="/index.html">Home</a><span class="nav-sep" aria-hidden="true">|</span><a class="nav-accent" href="/forum.html">Forum</a><span class="nav-sep" aria-hidden="true">|</span><a class="nav-accent" href="/forum-feed.html?from=study-guides">Forum Feed</a>
+          <a class="home nav-accent" href="/index.html">Home</a><span class="nav-sep" aria-hidden="true">|</span><a class="nav-accent" href="/forum.html">Forum</a>
         </div>
       </div>
     </nav>
@@ -114,54 +94,20 @@
             <div id="forumList" class="forum-list" role="list"></div>
             <div id="forumSentinel" class="load-sentinel" aria-hidden="true"></div>
           </div>
-          <aside class="rightbar" aria-label="About the forum">
+          <aside class="rightbar" aria-label="About Study Guides">
             <h3 style="margin:0 0 8px 0; font-family: var(--font-serif);">Key Links</h3>
             <ul class="cat-list" aria-label="Key links">
               <li><a href="/start-here.html"><span>Start Here</span><span class="muted">guide</span></a></li>
-              <li><a href="/forum/guidelines.html"><span>Guidelines</span><span class="muted">rules</span></a></li>
-              <li><a href="/forum/announcements.html"><span>Announcements</span><span class="muted">news</span></a></li>
-              <li><a href="/forum/help.html"><span>Help &amp; Support</span><span class="muted">contact</span></a></li>
-              <li><a href="/forum/prayer-and-reflections.html"><span>Prayer &amp; Self-Reflection</span><span class="muted">category</span></a></li>
+              <li><a href="/forum-guidelines/"><span>Guidelines</span><span class="muted">rules</span></a></li>
+              <li><a href="/forum-announcements/"><span>Announcements</span><span class="muted">news</span></a></li>
+              <li><a href="/forum-help/"><span>Help &amp; Support</span><span class="muted">contact</span></a></li>
+              <li><a href="/forum/prayer-and-reflections/"><span>Prayer &amp; Self-Reflection</span><span class="muted">category</span></a></li>
               <li><a href="/forum-feed/study-guides/"><span>Study Guides</span><span class="muted">category</span></a></li>
             </ul>
-            <h3 style="margin:14px 0 6px 0; font-family: var(--font-serif);">About the Forum</h3>
-            <p class="muted">Share longer texts and read with charity. Start small, give reasons, and invite dialogue.</p>
+            <h3 style="margin:14px 0 6px 0; font-family: var(--font-serif);">About Study Guides</h3>
+            <p class="muted">This space is for discussing one-page study guides. Share questions, insights, and helpful ways to use them in practice.</p>
             <h3 style="margin:14px 0 6px 0; font-family: var(--font-serif);">Categories</h3>
             <ul id="forumCats" class="cat-list" aria-label="Categories"></ul>
-            <h3 id="new-topic-template" style="margin:14px 0 6px 0; font-family: var(--font-serif);">New Topic Template</h3>
-            <p class="muted">Copy, create a file under <code>/forum/</code>, then add an entry in <code>/data/forum-posts.json</code>.</p>
-            <button id="copyTemplate" class="ghost" type="button">Copy template</button>
-            <pre id="topicTemplate" class="code-snippet" aria-label="Topic HTML template"><code>&lt;!doctype html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-  &lt;head&gt;
-    &lt;meta charset=&quot;utf-8&quot; /&gt;
-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
-    &lt;title&gt;Title | Church of Unity&lt;/title&gt;
-    &lt;meta name=&quot;description&quot; content=&quot;&quot; /&gt;
-    &lt;link rel=&quot;manifest&quot; href=&quot;/site.webmanifest&quot; /&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot; /&gt;
-    &lt;script type=&quot;module&quot; src=&quot;/site/meta.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;module&quot; src=&quot;/site/search.js&quot;&gt;&lt;/script&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;a class=&quot;skip-link&quot; href=&quot;#main&quot;&gt;Skip to content&lt;/a&gt;
-    &lt;canvas id=&quot;bgCanvas&quot; aria-hidden=&quot;true&quot;&gt;&lt;/canvas&gt;
-    &lt;header class=&quot;hero&quot;&gt;&lt;div class=&quot;container hero-inner&quot;&gt;&lt;div class=&quot;hero-copy&quot;&gt;
-      &lt;h1 class=&quot;site-title&quot;&gt;Title&lt;/h1&gt;
-      &lt;p class=&quot;tagline&quot;&gt;YYYY-MM-DD&lt;/p&gt;
-    &lt;/div&gt;&lt;/div&gt;&lt;/header&gt;
-    &lt;nav class=&quot;site-nav&quot; aria-label=&quot;Primary&quot;&gt;&lt;div class=&quot;container nav-inner&quot;&gt;&lt;div class=&quot;nav-links&quot;&gt;
-      &lt;a class=&quot;home&quot; href=&quot;/index.html&quot;&gt;Home&lt;/a&gt; &lt;a href=&quot;/forum.html&quot;&gt;Back to Forum&lt;/a&gt;
-    &lt;/div&gt;&lt;/div&gt;&lt;/nav&gt;
-    &lt;main id=&quot;main&quot; class=&quot;container&quot;&gt;
-      &lt;article class=&quot;section dropcap&quot;&gt;
-        &lt;p&gt;Write here.&lt;/p&gt;
-      &lt;/article&gt;
-    &lt;/main&gt;
-    &lt;footer class=&quot;footer container&quot;&gt;&lt;small&gt;&amp;copy; &lt;span id=&quot;year&quot;&gt;&lt;/span&gt; Church of Unity&lt;/small&gt;&lt;/footer&gt;
-    &lt;script type=&quot;module&quot; src=&quot;/main.js&quot;&gt;&lt;/script&gt;
-  &lt;/body&gt;
-&lt;/html&gt;</code></pre>
           </aside>
         </div>
       </section>
@@ -172,17 +118,136 @@
     </footer>
 
     <script>
-      // Use the same header adaptation logic as base feed, but meta provides defaults
+      // Adapt the feed header/nav label based on view or category
       (function(){
         try {
+          const params = new URLSearchParams(location.search);
+          const legacyCat = (params.get('category') || '').trim();
+          let catSlug = (params.get('cat') || '').trim().toLowerCase();
+          let latestFlag = (params.get('latest') || '').trim().toLowerCase();
+          const view = (params.get('view') || '').trim().toLowerCase();
+          const fromParam = (params.get('from') || '').trim().toLowerCase();
           const h = document.querySelector('.hero .site-title');
           const t = document.querySelector('.hero .tagline');
-          if (h) h.textContent = 'Study Guides';
-          if (t) t.textContent = 'Guides for practice and study';
+          const parts = (document.title || '').split('|');
+          const site = (parts[1] || 'Church of Unity').trim();
+          const metaCat = (document.querySelector('meta[name="forum-default-category"]')?.content || '').trim();
+          const metaLatest = !!document.querySelector('meta[name="forum-default-latest"]');
+          // Normalize legacy params to clean ones
+          if (legacyCat) {
+            const slug = legacyCat.toLowerCase().replace(/&/g,'and').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+            const u = new URL(location.href); u.searchParams.delete('category'); u.searchParams.set('cat', slug); history.replaceState(null,'',u);
+          }
+          if (view === 'browse-latest' || view === 'latest') {
+            const u = new URL(location.href); u.searchParams.delete('view'); u.searchParams.set('latest','1'); history.replaceState(null,'',u);
+          }
+          // Keep .html paths to avoid refresh 404s on hosts without rewrites
+          if (!catSlug && metaCat) {
+            catSlug = metaCat.toLowerCase().replace(/&/g,'and').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+          }
+          if (!latestFlag && metaLatest) latestFlag = '1';
+          const map = { 'study-guides': 'Study Guides' };
+          const cat = catSlug ? (map[catSlug] || catSlug.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())) : '';
+
+          function showBack(label, href){
+            const bar = document.getElementById('backBar');
+            if (!bar) return;
+            bar.innerHTML = '';
+            const a = document.createElement('a');
+            a.className = 'link-back';
+            a.href = href;
+            a.textContent = label;
+            bar.appendChild(a);
+            bar.hidden = false;
+          }
+
+          function ensureFeedCrumb(from) {
+            const nav = document.querySelector('.site-nav .nav-links.forum-bar');
+            if (!nav) return;
+            const has = nav.querySelector('a[href^="/forum-feed.html"]');
+            if (has) return;
+            const sep = document.createElement('span'); sep.className = 'nav-sep'; sep.textContent = '|';
+            const link = document.createElement('a'); link.className = 'nav-accent'; link.textContent = 'Forum Feed';
+            link.href = from ? `/forum-feed.html?from=${encodeURIComponent(from)}` : '/forum-feed.html';
+            nav.appendChild(sep);
+            nav.appendChild(link);
+          }
+
+          if (cat) {
+            if (h) h.textContent = cat;
+            if (t) {
+              if (cat.toLowerCase() === 'study guides') t.textContent = 'Guides for practice and study';
+              else t.textContent = `Latest in ${cat}`;
+            }
+            document.title = `${cat} | ${site}`;
+            ensureFeedCrumb(catSlug);
+            return;
+          }
+
+          if (latestFlag === '1' || latestFlag === 'true') {
+            const label = 'Latest';
+            if (h) h.textContent = label;
+            if (t) t.textContent = 'Newest across all categories';
+            document.title = `${label} | ${site}`;
+            ensureFeedCrumb('browse-latest');
+            return;
+          }
+
+          // Default header for full archive view
+          if (h) h.textContent = 'All Posts';
+          if (t) t.textContent = 'Full forum archive';
+          document.title = `All Posts | ${site}`;
+
+          // Mark crumb as current and disable click on the current page link
+          const navFeed = document.querySelector('.site-nav .nav-links a[href^="/forum-feed.html"]');
+          if (navFeed) { navFeed.setAttribute('aria-current', 'page'); navFeed.style.pointerEvents = 'none'; navFeed.style.cursor = 'default'; }
         } catch (_) {}
       })();
     </script>
-    <script type="module" src="/site/forum.js"></script>
-    <script type="module" src="/main.js"></script>
+
+    <script>
+      // Configure back button based on ?from or referrer
+      (function(){
+        try {
+          const params = new URLSearchParams(location.search);
+          const fromParam = (params.get('from') || '').trim().toLowerCase();
+          const map = {
+            'start': { label: 'Back to Start a Topic', href: '/forum-start/' },
+            'guidelines': { label: 'Back to Guidelines', href: '/forum-guidelines/' },
+            'help': { label: 'Back to Help & Support', href: '/forum-help/' },
+            'announcements': { label: 'Back to Announcements', href: '/forum-announcements/' },
+            'prayer': { label: 'Back to Prayer & Self-Reflection', href: '/forum/prayer-and-reflections/' },
+            'study-guides': { label: 'Back to Study Guides', href: '/forum-feed/study-guides/' },
+            'browse-latest': { label: 'Back to Latest', href: '/forum-feed/latest/' },
+          };
+          function show(labelHref){
+            const bar = document.getElementById('backBar');
+            if (!bar || !labelHref) return;
+            bar.innerHTML = '';
+            const a = document.createElement('a'); a.className = 'link-back'; a.href = labelHref.href; a.textContent = labelHref.label; bar.appendChild(a); bar.hidden = false;
+          }
+          if (map[fromParam]) { show(map[fromParam]); return; }
+          // Fallback to same-origin referrer
+          const ref = document.referrer;
+          if (ref) {
+            try {
+              const u = new URL(ref);
+              const path = u.pathname || '';
+              if (path.endsWith('/forum-start/')) return show(map['start']);
+              if (path.endsWith('/forum-guidelines/')) return show(map['guidelines']);
+              if (path.endsWith('/forum-help/')) return show(map['help']);
+              if (path.endsWith('/forum-announcements/')) return show(map['announcements']);
+              if (path.endsWith('/forum/prayer-and-reflections/')) return show(map['prayer']);
+            } catch (_) {}
+          }
+        } catch (_) {}
+      })();
+    </script>
   </body>
  </html>
+
+
+
+
+
+

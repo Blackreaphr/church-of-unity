@@ -1,9 +1,10 @@
-// Lightweight client-side search overlay with fuzzy matching
+﻿// Lightweight client-side search overlay with fuzzy matching
 
 const PAGES = [
   { title: 'Start Here', url: '/start-here.html', tags: 'foundations catechism begin' },
   { title: 'Practice', url: '/practice.html', tags: 'lectio examen sabbath rule of life guides' },
-  { title: 'Texts and Library', url: '/texts-library.html', tags: 'scripture catechism readings philosophy' },
+  { title: 'Texts and Library', url: '/texts-library.html', tags: 'scripture catechism readings philosophy kjv' },
+  { title: 'Texts and Library: Catholic & KJV', url: '/texts-library-catholic.html', tags: 'scripture deuterocanon apocrypha vulgate masoretic textus receptus translation comparison canon' },
   { title: 'Inquiry Forum', url: '/inquiry-forum.html', tags: 'questions dialogue discussion threads' },
   { title: 'Forum', url: '/forum.html', tags: 'forum essays posts longform' },
   { title: 'About and Governance', url: '/about.html', tags: 'origin commitments norms governance' },
@@ -21,9 +22,9 @@ const PAGES = [
   { title: 'Condemnation (Page 3): Practices and Promises', url: '/condemnation-3.html', tags: 'freedom to give freewill offering budget transparency oversight safeguarding consent coercion simony spiritual blackmail accountability' },
   { title: 'Essay: The Ten Commandments', url: '/essays/ten-commandments.html', tags: 'law decalogue essay' },
   { title: 'Essay: Providence and Freedom', url: '/essays/providence-and-freedom.html', tags: 'providence freedom models essay' },
-  { title: 'Guide: Daily Examen', url: '/guides/examen.html', tags: 'guide pdf practice examen' },
-  { title: 'Guide: Lectio Divina', url: '/guides/lectio-divina.html', tags: 'guide pdf practice lectio' },
-  { title: 'Guide: Rule of Life', url: '/guides/rule-of-life.html', tags: 'guide pdf practice rule life' },
+  { title: 'Guide: Daily Examen', url: '/guide-examen', tags: 'guide pdf practice examen' },
+  { title: 'Guide: Lectio Divina', url: '/guide-lectio-divina', tags: 'guide pdf practice lectio' },
+  { title: 'Guide: Rule of Life', url: '/guide-rule-of-life', tags: 'guide pdf practice rule life' },
 ];
 
 function createOverlay() {
@@ -33,7 +34,7 @@ function createOverlay() {
     <div class="search-panel" role="dialog" aria-modal="true" aria-labelledby="searchLabel">
       <div class="search-head">
         <label id="searchLabel" class="visually-hidden">Search</label>
-        <input class="search-input" type="search" placeholder="Search pages…" autofocus />
+        <input class="search-input" type="search" placeholder="Search pagesâ€¦" autofocus />
         <span class="kbd">Esc</span>
       </div>
       <div class="search-results" role="listbox"></div>
@@ -60,6 +61,21 @@ function openSearch() {
   let items = PAGES.slice(0);
   let selected = 0;
 
+  // Type guards for DOM elements used below
+  if (!(input instanceof HTMLInputElement)) {
+    console.warn('Search input element not found');
+    return;
+  }
+  if (!(list instanceof HTMLElement)) {
+    console.warn('Search results container not found');
+    return;
+  }
+
+  /** @type {HTMLInputElement} */
+  const inputEl = input;
+  /** @type {HTMLElement} */
+  const listEl = list;
+
   function render(q = '') {
     const ranked = PAGES
       .map(it => ({ it, sc: score(q, it) }))
@@ -70,21 +86,21 @@ function openSearch() {
     items = ranked;
     if (selected >= items.length) selected = items.length - 1;
     if (selected < 0) selected = 0;
-    list.innerHTML = items.map((it, i) => `<a href="${it.url}" role="option" aria-selected="${i===selected}">${it.title}</a>`).join('');
+    listEl.innerHTML = items.map((it, i) => `<a href="${it.url}" role="option" aria-selected="${i===selected}">${it.title}</a>`).join('');
   }
 
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
   render('');
-  setTimeout(() => input.focus(), 0);
+  setTimeout(() => inputEl.focus(), 0);
 
   function onKey(e) {
     if (e.key === 'Escape') { close(); return; }
     if (e.key === 'ArrowDown') {
-      e.preventDefault(); selected = Math.min(selected + 1, Math.max(items.length - 1, 0)); render(input.value); return;
+      e.preventDefault(); selected = Math.min(selected + 1, Math.max(items.length - 1, 0)); render(inputEl.value); return;
     }
     if (e.key === 'ArrowUp') {
-      e.preventDefault(); selected = Math.max(selected - 1, 0); render(input.value); return;
+      e.preventDefault(); selected = Math.max(selected - 1, 0); render(inputEl.value); return;
     }
     if (e.key === 'Enter') {
       const it = items[selected];
@@ -101,7 +117,7 @@ function openSearch() {
     overlay.removeEventListener('click', onClick);
   }
 
-  input.addEventListener('input', () => { selected = 0; render(input.value); });
+  inputEl.addEventListener('input', () => { selected = 0; render(inputEl.value); });
   document.addEventListener('keydown', onKey);
   overlay.addEventListener('click', onClick);
 }
@@ -124,3 +140,6 @@ if (document.readyState === 'loading') {
 } else {
   bindTriggers();
 }
+
+
+

@@ -1,0 +1,9 @@
+﻿{
+    "name":  "church-of-unity",
+    "version":  "1.0.0",
+    "description":  "",
+    "main":  "main.js",
+    "scripts":  {
+                    "dev":  "vite",
+                    "build":  "vite build",
+                    "postbu

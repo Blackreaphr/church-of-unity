@@ -5,6 +5,9 @@ export default {
 
       // Handle non-API requests: pretty URLs and pass-through to origin
       const path = url.pathname || '/';
+      const isInternal = (request.headers.get('X-Edge-Fallback') || '') === '1';
+      const accept = request.headers.get('Accept') || '';
+      const wantsHtml = /(^|[;,\s])text\/html(,|;|$)/i.test(accept);
       if (!path.startsWith('/api/')) {
         // Handle common trailing-slash pages like /forum/ -> /forum
         if ((request.method === 'GET' || request.method === 'HEAD') && path.endsWith('/') && path !== '/') {
@@ -16,17 +19,43 @@ export default {
               const res = await fetch(new Request(tryFile.toString(), request));
               if (res.ok) { url.pathname = noSlash; return Response.redirect(url.toString(), 301); }
             } catch {}
+
+            // Hard fallback order for /forum/<slug>/: prefer assets copy, then index.html
+            try {
+              const m = noSlash.match(/^\/forum\/([^/]+)$/i);
+              if (m && m[1]) {
+                const slug = m[1];
+                // 1) assets/forum-<slug>.html
+                try {
+                  const tryAsset = new URL(url.toString());
+                  tryAsset.pathname = `/assets/forum-${slug}.html`;
+                  const innerA = new Request(tryAsset.toString(), { ...request, headers: new Headers(request.headers) });
+                  innerA.headers.set('X-Edge-Fallback', '1');
+                  const rA = await fetch(innerA);
+                  if (rA && rA.ok) return rA;
+                } catch {}
+                // 2) /<noSlash>/index.html
+                try {
+                  const tryIdx = new URL(url.toString());
+                  tryIdx.pathname = noSlash + '/index.html';
+                  const innerI = new Request(tryIdx.toString(), { ...request, headers: new Headers(request.headers) });
+                  innerI.headers.set('X-Edge-Fallback', '1');
+                  const rI = await fetch(innerI);
+                  if (rI && rI.ok) return rI;
+                } catch {}
+              }
+            } catch {}
           }
         }
         const isWelcome = /^\/forum\/welcome(?:\.html)?$/i.test(path);
-        if (request.method === 'GET' || request.method === 'HEAD') {
+        if ((request.method === 'GET' || request.method === 'HEAD') && !isInternal) {
           // /index.html -> /
           if (/\/index\.html$/i.test(path)) {
             url.pathname = path.replace(/\/index\.html$/i, '/');
             return Response.redirect(url.toString(), 301);
           }
-          // *.html -> *
-          if (/\.html$/i.test(path)) {
+          // Canonicalize *.html -> extensionless for browser navigations (skip assets)
+          if (wantsHtml && /\.html$/i.test(path) && !/^\/assets\//i.test(path)) {
             url.pathname = path.replace(/\.html$/i, '');
             return Response.redirect(url.toString(), 301);
           }
@@ -38,12 +67,167 @@ export default {
         const hasExt = /\.[a-z0-9]+$/i.test(path);
         if ((request.method === 'GET' || request.method === 'HEAD') && !hasExt && !path.endsWith('/')) {
           attemptedHtml = true;
-          const tryHtml = new URL(url.toString());
-          tryHtml.pathname = path + '.html';
-          const r = await fetch(new Request(tryHtml.toString(), request));
-          if (r.ok) resp = r;
+          // Prefer serving from assets for forum slugs to avoid origin flakiness
+          if (/^\/forum\//i.test(path)) {
+            const parts = path.replace(/^\/+|\/+$/g,'').split('/');
+            if (parts.length === 2) {
+              const slug = parts[1];
+              // 1) assets/forum-<slug>.html
+              try {
+                const tryAsset = new URL(url.toString());
+                tryAsset.pathname = `/assets/forum-${slug}.html`;
+                const innerA = new Request(tryAsset.toString(), { ...request, headers: new Headers(request.headers) });
+                innerA.headers.set('X-Edge-Fallback', '1');
+                const rA = await fetch(innerA);
+                if (rA.ok) resp = rA;
+              } catch {}
+            }
+          }
+          // 2) If not satisfied, try directory index: /path/index.html
+          if (!resp) {
+            try {
+              const tryIdx = new URL(url.toString());
+              tryIdx.pathname = path + '/index.html';
+              const inner = new Request(tryIdx.toString(), { ...request, headers: new Headers(request.headers) });
+              inner.headers.set('X-Edge-Fallback', '1');
+              const r = await fetch(inner);
+              if (r.ok) resp = r;
+            } catch {}
+          }
+          // 3) Then try plain .html fallback: /path.html
+          if (!resp) {
+            try {
+              const tryHtml = new URL(url.toString());
+              tryHtml.pathname = path + '.html';
+              const inner2 = new Request(tryHtml.toString(), { ...request, headers: new Headers(request.headers) });
+              inner2.headers.set('X-Edge-Fallback', '1');
+              const r2 = await fetch(inner2);
+              if (r2.ok) resp = r2;
+            } catch {}
+          }
         }
         if (!resp) resp = await fetch(request);
+
+        // If origin returns 404 for forum *.html pages, hard fallback
+        if ((request.method === 'GET' || request.method === 'HEAD') && resp && resp.status === 404) {
+          if (/^\/forum\/.+\.html$/i.test(path)) {
+            // Try directory index for matching slug
+            const htmlName = path.replace(/^\/+/, ''); // forum/slug.html
+            const slug = htmlName.replace(/^forum\//i, '').replace(/\.html$/i, '');
+            // 1) /forum/<slug>/index.html
+            let r;
+            try {
+              const tryIdx = new URL(url.toString());
+              tryIdx.pathname = `/forum/${slug}/index.html`;
+              const inner = new Request(tryIdx.toString(), { ...request, headers: new Headers(request.headers) });
+              inner.headers.set('X-Edge-Fallback', '1');
+              r = await fetch(inner);
+              if (r.ok) return r;
+            } catch {}
+            // 2) /assets/forum-<slug>.html
+            try {
+              const tryAsset = new URL(url.toString());
+              tryAsset.pathname = `/assets/forum-${slug}.html`;
+              const inner2 = new Request(tryAsset.toString(), { ...request, headers: new Headers(request.headers) });
+              inner2.headers.set('X-Edge-Fallback', '1');
+              r = await fetch(inner2);
+              if (r.ok) return r;
+            } catch {}
+          }
+        }
+
+        // Server-side homepage rewrite: inject live members/views and joined state
+        if (request.method === 'GET' && (path === '/' || /\/index\.html$/i.test(path))) {
+          try {
+            const ctype = resp.headers.get('Content-Type') || '';
+            if (/text\/html/i.test(ctype)) {
+              // Helpers local to this block
+              const ns = (url.hostname || '').toLowerCase().replace(/^www\./, '');
+              const keyOf = (n, k) => `${n}:${k}`;
+              const getNum = async (n, k, def = 0) => {
+                try { const raw = await env.STATS.get(keyOf(n, k)); const v = Number(raw); return Number.isFinite(v) ? v : def; } catch { return def; }
+              };
+              const parseCookies = (req) => {
+                try {
+                  const str = req.headers.get('Cookie') || '';
+                  const out = {};
+                  str.split(';').forEach(part => {
+                    const [k, ...v] = part.trim().split('=');
+                    if (!k) return; out[decodeURIComponent(k)] = decodeURIComponent((v.join('=') || ''));
+                  });
+                  return out;
+                } catch { return {}; }
+              };
+
+              const [members, views] = await Promise.all([
+                getNum(ns, 'members', 0),
+                getNum(ns, 'site-views', 0),
+              ]);
+
+              // Determine joined UI from cookie marker
+              let isJoined = false;
+              try {
+                const cookies = parseCookies(request);
+                const memberId = cookies['co_member'] || '';
+                if (memberId) {
+                  const marker = await env.STATS.get(keyOf(ns, `member:${memberId}`));
+                  isJoined = !!marker;
+                }
+              } catch {}
+
+              let html = await resp.text();
+              // Update counts: replace inner text of #memberCount and #viewCount
+              html = html.replace(/(id=(["'])memberCount\2>)[^<]*/i, `$1${members}`);
+              html = html.replace(/(id=(["'])viewCount\2>)[^<]*/i, `$1${views}`);
+              // Remove any data-suffix="+" and explicit plus suffix spans
+              html = html.replace(/\sdata-suffix=(["'])\+\1/ig, '');
+              html = html.replace(/<span\s+class=(["'])stat-suffix\1>\+<\/span>/ig, '');
+
+              if (isJoined) {
+                // Flip Join UI to Joined(Member)
+                html = html.replace(/(<button[^>]*id=(["'])joinBtn\2[^>]*>)([\s\S]*?)(<\/button>)/i,
+                  (m, open, q, _text, close) => {
+                    // Ensure aria-label and disabled and joined class
+                    let tag = open;
+                    // aria-label
+                    if (/aria-label=/i.test(tag)) tag = tag.replace(/aria-label=(["']).*?\1/i, 'aria-label="Joined(Member)"');
+                    else tag = tag.replace(/>$/, ' aria-label="Joined(Member)">');
+                    // class joined
+                    if (/class=(["']).*?\1/i.test(tag)) tag = tag.replace(/class=(["'])(.*?)\1/i, (m2, qq, cls) => `class=${qq}${cls} joined${qq}`);
+                    else tag = tag.replace(/>$/, ' class="joined">');
+                    // disabled
+                    if (!/\sdisabled(=|\s|>)/i.test(tag)) tag = tag.replace(/>$/, ' disabled>');
+                    return `${tag}Joined(Member)${close}`;
+                  }
+                );
+                // Hide restore button
+                html = html.replace(/(<button[^>]*id=(["'])restoreBtn\2[^>]*)(>)/i,
+                  (m, open, q, end) => (/style=/i.test(open) ? open.replace(/style=(["'])(.*?)\1/i, (mm, qq, st) => `style=${qq}${st};display:none${qq}`) : `${open} style="display:none"`) + end
+                );
+                // Show recovery button
+                html = html.replace(/(<button[^>]*id=(["'])getRecoveryBtn\2[^>]*)(>)/i,
+                  (m, open, q, end) => open.replace(/style=(["']).*?\1/i, '') + end
+                );
+              }
+
+              // Minimal join handler inline script to ensure button works without larger bundles
+              const joinInline = `\n<script><!-- join-inline-handler -->\n(function(){\n  try{\n    var btn=document.getElementById('joinBtn');\n    if(!btn) return;\n    var ns=(location.hostname||'').toLowerCase().replace(/^www\\./,'');\n    function setJoinedUI(){\n      try{ localStorage.setItem('co:joined','1'); }catch(e){}\n      try{ btn.textContent='Joined(Member)'; btn.setAttribute('aria-label','Joined(Member)'); btn.classList.add('joined'); btn.disabled=true; }catch(e){}\n      try{ var r=document.getElementById('restoreBtn'); if(r) r.style.display='none'; var g=document.getElementById('getRecoveryBtn'); if(g) g.style.display=''; }catch(e){}\n    }\n    btn.addEventListener('click', function(){\n      if (btn.disabled) return;\n      btn.disabled=true; var prev=btn.textContent; btn.textContent='Joining...';\n      fetch('/api/stats/join/'+encodeURIComponent(ns), { credentials: 'include' })\n        .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error(String(r.status))); })\n        .then(function(){ setJoinedUI(); })\n        .catch(function(){ btn.textContent='Try again'; btn.disabled=false; setTimeout(function(){ if(!localStorage.getItem('co:joined')) btn.textContent=prev||'Join Unity'; }, 1500); });\n    });\n  }catch(e){}\n})();\n</script>\n`;
+
+              // Inject the inline join handler if not already present
+              if (!/join-inline-handler/i.test(html)) {
+                if (/<\/header>/i.test(html)) html = html.replace(/<\/header>/i, '</header>' + joinInline);
+                else if (/<\/body>/i.test(html)) html = html.replace(/<\/body>/i, joinInline + '</body>');
+                else html += joinInline;
+              }
+
+              const headers = new Headers(resp.headers);
+              headers.set('Cache-Control', 'no-store, max-age=0');
+              const vary = headers.get('Vary') || '';
+              headers.set('Vary', vary ? `${vary}, Cookie` : 'Cookie');
+              return new Response(html, { status: resp.status, headers });
+            }
+          } catch (_) { /* fall through to resp */ }
+        }
 
         // Inject the Start-a-Topic form into the Welcome page if not deployed yet
         if (request.method === 'GET' && isWelcome) {
@@ -110,6 +294,11 @@ export default {
         return new Response(JSON.stringify({ ok: true }), { headers: baseHeaders });
       }
 
+      if (service === 'stats' && action === 'turnstile') {
+        const sitekey = (env.TURNSTILE_SITEKEY || '').toString();
+        return new Response(JSON.stringify({ sitekey }), { headers: baseHeaders });
+      }
+
       function normalizeNs(ns) { const v = String(ns || '').toLowerCase(); return v.replace(/^www\./, ''); }
       function keyOf(ns, key) { return `${ns}:${key}`; }
 
@@ -137,7 +326,80 @@ export default {
         return out;
       }
 
-      function cookieHeader(name, value, { https, partitioned } = {}) {
+      // --- Anti-spam helpers (IP, rate limits, Turnstile verify) ---
+      const getIp = (req) => (req.headers.get('CF-Connecting-IP') || req.headers.get('X-Forwarded-For') || '').split(',')[0].trim();
+      const minuteBucket = () => Math.floor(Date.now() / 60000);
+      const hourBucket = () => Math.floor(Date.now() / 3600000);
+      async function kvIncr(key, ttlSec) {
+        const cur = Number(await env.STATS.get(key)) || 0;
+        const next = cur + 1;
+        await env.STATS.put(key, String(next), { expirationTtl: Math.max(1, ttlSec|0) });
+        return next;
+      }
+      async function rateLimit({ ns, ip, kind }) {
+        try {
+          if (!ip) return { limited: false };
+          const pmDefault = (kind === 'reply') ? 8 : 3;
+          const phDefault = (kind === 'reply') ? 20 : 10;
+          const RL_PM = Number(env.RL_POSTS_PER_MIN || pmDefault);
+          const RL_PH = Number(env.RL_POSTS_PER_HOUR || phDefault);
+          const pmKey = `rl:${kind}:${ns}:${ip}:m:${minuteBucket()}`;
+          const phKey = `rl:${kind}:${ns}:${ip}:h:${hourBucket()}`;
+          const cMin = await kvIncr(pmKey, 120);
+          const cHour = await kvIncr(phKey, 7200);
+          const limited = (RL_PM > 0 && cMin > RL_PM) || (RL_PH > 0 && cHour > RL_PH);
+          return { limited, cMin, cHour, RL_PM, RL_PH };
+        } catch { return { limited: false }; }
+      }
+      async function verifyTurnstile(token, ip) {
+        try {
+          const secret = (env.TURNSTILE_SECRET || '').trim();
+          if (!secret) return { ok: true, skipped: true };
+          if (!token) return { ok: false, reason: 'missing_token' };
+          const body = new URLSearchParams();
+          body.set('secret', secret);
+          body.set('response', token);
+          if (ip) body.set('remoteip', ip);
+          const r = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', body, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+          const j = await r.json();
+          return { ok: !!j.success, data: j };
+        } catch { return { ok: false, reason: 'verify_error' }; }
+      }
+
+      function thresholds() {
+        const p = Number(env.THRESH_PUBLISH_LT || '20');
+        const l = Number(env.THRESH_LIMITED_LT || '50');
+        const publish_lt = Number.isFinite(p) ? p : 20;
+        const limited_lt = Number.isFinite(l) ? l : 50;
+        return { publish_lt, limited_lt };
+      }
+
+      async function checkBanned(ns, ip, userId) {
+        try {
+          if (!ns) return null;
+          const ipKey = ip ? `ban:ip:${ns}:${ip}` : '';
+          const userKey = userId ? `ban:user:${ns}:${userId}` : '';
+          let record = null;
+          if (ipKey) {
+            const r = await env.STATS.get(ipKey);
+            if (r) record = { type: 'ip', ...JSON.parse(r) };
+          }
+          if (!record && userKey) {
+            const r2 = await env.STATS.get(userKey);
+            if (r2) record = { type: 'user', ...JSON.parse(r2) };
+          }
+          return record; // null if not banned
+        } catch { return null; }
+      }
+
+      /**
+       * Build a Set-Cookie header string.
+       * @param {string} name
+       * @param {string} value
+       * @param {{ https?: boolean, partitioned?: boolean }} [opts]
+       */
+      function cookieHeader(name, value, opts) {
+        const { https = false, partitioned = false } = opts || {};
         const maxAge = 60 * 60 * 24 * 365; // ~1 year
         // Use SameSite=None to allow cross-site dev (localhost -> domain) and ensure Secure for HTTPS
         let str = `${name}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; SameSite=None`;
@@ -187,6 +449,35 @@ export default {
           return t.length > n ? (t.slice(0, n - 1) + '…') : t;
         };
 
+        // Spam helpers in forum service
+        const parseLinks = (text) => {
+          const t = String(text || '');
+          const m = t.match(/https?:\/\/[^\s]+|www\.[^\s]+/ig) || [];
+          return m.slice(0, 50);
+        };
+        const spamBlockWords = (() => {
+          const defaults = [
+            'whatsapp','wa.me/','telegram','t.me/','kik','snapchat','instagram dm','dm me','contact me',
+            'onlyfans','of ','webcam','camgirl','nsfw cam','escort','sugar daddy','sugar mom','dating site',
+            'casino','betting','sportsbook','1xbet','parlay','promo code','giveaway','airdrop',
+            'crypto','bitcoin','forex','guaranteed returns','double your money','loan approval','cashapp','venmo',
+            'followers','likes','views for sale','cheap seo','backlinks','bit.ly','tinyurl.com','goo.gl'
+          ];
+          const raw = (env.SPAM_BLOCK_WORDS || '').toString();
+          const list = raw ? raw.split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : defaults;
+          return list;
+        })();
+        function spamHints(text){
+          const t = (text || '').toLowerCase();
+          const out = [];
+          if ((t.match(/https?:\/\//g) || []).length + (t.match(/\bwww\./g) || []).length >= 3) out.push('many_links');
+          if (/whatsapp|telegram|kik|snapchat|cashapp|venmo|insta\b|dm\s+me|contact\s+me|bitcoin|crypto|forex|loan\b|guaranteed\s+returns/i.test(text)) out.push('promo_keywords');
+          if (/(\+?\d[\d\s-]{7,}\d)/.test(text)) out.push('phone_number');
+          if (/[A-Z]{8,}/.test(text)) out.push('all_caps_block');
+          for (const w of spamBlockWords) { if (w && t.includes(w.toLowerCase())) out.push(`block_word:${w}`); }
+          return out;
+        }
+
         // Lightweight scoring using the same rules as moderation
         function localScore(text, tags, media, trust_tier, velocity) {
           const P0_RULES = [
@@ -214,6 +505,9 @@ export default {
           if (tags.includes('medical-or-financial-claims')) rule_hits.P1.push('p1_med_fin_tag');
           if (tags.includes('hateful-or-harassing')) rule_hits.P1.push('p1_harass_tag');
           const media_flags = [];
+          const links = parseLinks(text);
+          const linkCount = links.length;
+          const hints = spamHints(text);
           const linkRisk = 'low';
           const tier = (trust_tier === 'T1' || trust_tier === 'T2') ? trust_tier : 'T0';
           if (rule_hits.P0.length) {
@@ -221,11 +515,13 @@ export default {
           }
           let s = Math.min(30, rule_hits.P1.length * 12);
           s += media_flags.includes('nsfw') ? 10 : 0;
+          if (linkCount > 0) s += Math.min(30, (linkCount - 1) * (tier === 'T0' ? 10 : 6));
+          s += Math.min(25, hints.length * (tier === 'T0' ? 8 : 4));
           s += tier === 'T0' ? 8 : (tier === 'T1' ? 3 : 0);
           const vel = (velocity && velocity.posts_last_hour) || 0;
           if (vel > 5) s += 10; if (vel > 10) s += 20;
           s = Math.max(0, Math.min(100, s));
-          const publish_lt = 20, limited_lt = 50;
+          const { publish_lt, limited_lt } = thresholds();
           let routing;
           if (tier === 'T0') {
             routing = s < publish_lt ? { state: 'limited', reasons: ['t0_default_limited'] }
@@ -235,6 +531,9 @@ export default {
               : (s < limited_lt ? { state: 'limited', reasons: ['needs_review'] } : { state: 'quarantine', reasons: ['high_risk'] });
           }
           const policy_labels = rule_hits.P1.length ? ['P1'] : ['P2'];
+          if ((tier === 'T0' && linkCount >= 3) || hints.some(h => h.startsWith('block_word:'))) {
+            routing = { state: 'quarantine', reasons: ['spam_links_or_blockword'] };
+          }
           return { risk: s, routing, rule_hits, media_flags, policy_labels };
         }
 
@@ -248,7 +547,30 @@ export default {
           const tags = ensureArr(body.tags).map(t => clean(t, 32)).slice(0, 10);
           if (!title || !content) return bad('Title and body are required');
           const ns = nsOf();
+          // Require category and at least one tag
+          if (!category || !(tags && tags.length)) return bad('Category and at least one tag are required');
+          // Hard block if spam keywords or promo present
+          try {
+            const txt = `${title}\n${content}`;
+            const hintsCreate = spamHints(txt);
+            const hasBlock = hintsCreate.some(h => h.startsWith('block_word:')) || hintsCreate.includes('promo_keywords');
+            if (hasBlock) return new Response(JSON.stringify({ error: 'Prohibited content' }), { status: 400, headers: baseHeaders });
+          } catch {}
+          // Anti-spam: Turnstile + rate limit (optional)
+          try {
+            const ip = getIp(request);
+            const tsToken = body.ts || body.turnstile || body['cf-turnstile-response'] || '';
+            const ts = await verifyTurnstile(tsToken, ip);
+            if (!ts.ok) return new Response(JSON.stringify({ error: 'Verification failed' }), { status: 403, headers: baseHeaders });
+            const rl = await rateLimit({ ns, ip, kind: 'post' });
+            if (rl.limited) return new Response(JSON.stringify({ error: 'Too many submissions, try later' }), { status: 429, headers: baseHeaders });
+          } catch {}
           const author_id = clean(body.user_id || '', 100) || 'anon';
+          // Ban check (by IP or user)
+          try {
+            const ban = await checkBanned(ns, getIp(request), author_id);
+            if (ban) return new Response(JSON.stringify({ error: 'Banned', ban }), { status: 403, headers: baseHeaders });
+          } catch {}
           const trust_tier = (body.user_context && body.user_context.trust_tier) || 'T0';
           const velocity = (body.user_context && body.user_context.velocity) || {};
           const score = localScore(`${title}\n${content}`, tags, [], trust_tier, velocity);
@@ -346,11 +668,33 @@ export default {
           const post_id = clean(body.post_id, 64);
           const content = clean(body.body, 10000);
           if (!post_id || !content) return bad('post_id and body are required');
+          // Hard block on spam keywords/promo
+          try {
+            const hintsReply = spamHints(content);
+            if (hintsReply.some(h => h.startsWith('block_word:')) || hintsReply.includes('promo_keywords')) {
+              return new Response(JSON.stringify({ error: 'Prohibited content' }), { status: 400, headers: baseHeaders });
+            }
+          } catch {}
+          // Anti-spam: Turnstile + rate limit (optional)
+          try {
+            const ip = getIp(request);
+            const tsToken = body.ts || body.turnstile || body['cf-turnstile-response'] || '';
+            const ts = await verifyTurnstile(tsToken, ip);
+            if (!ts.ok) return new Response(JSON.stringify({ error: 'Verification failed' }), { status: 403, headers: baseHeaders });
+            const nsTmp = nsOf();
+            const rl = await rateLimit({ ns: nsTmp, ip, kind: 'reply' });
+            if (rl.limited) return new Response(JSON.stringify({ error: 'Too many replies, try later' }), { status: 429, headers: baseHeaders });
+          } catch {}
           const postRaw = await env.STATS.get(`forum:post:${post_id}`);
           if (!postRaw) return notFound('Post not found');
           const post = JSON.parse(postRaw);
           const ns = nsOf(); if (post.ns !== ns) return notFound('Post not found');
           const author_id = clean(body.user_id || '', 100) || 'anon';
+          // Ban check (by IP or user)
+          try {
+            const ban = await checkBanned(ns, getIp(request), author_id);
+            if (ban) return new Response(JSON.stringify({ error: 'Banned', ban }), { status: 403, headers: baseHeaders });
+          } catch {}
           const trust_tier = (body.user_context && body.user_context.trust_tier) || 'T0';
           const velocity = (body.user_context && body.user_context.velocity) || {};
           const score = localScore(content, [], [], trust_tier, velocity);
@@ -569,7 +913,7 @@ export default {
           { id: 'p1_med_fin_claims', re: /(cure\s+for\b|guaranteed\s+returns|financial\s+advice)\b/i },
           { id: 'p1_safety_borderline', re: /(self\s*h[au]rm|pro\s*ana|suicide\s+methods)/i }
         ];
-        const THRESH = { publish_lt: 20, limited_lt: 50 };
+        const THRESH = thresholds();
 
         async function readJson(req) { try { return await req.json(); } catch { return null; } }
         const ensureArr = (v) => Array.isArray(v) ? v : [];
@@ -638,7 +982,10 @@ export default {
           const tier = tierOf(body.user_context && body.user_context.trust_tier);
           const velocity = (body.user_context && body.user_context.velocity) || {};
           const { rule_hits, media_flags } = detect(text, tags, media);
-          const risk = aggregate({ rule_hits, media_flags, links, tier, velocity });
+          let risk = aggregate({ rule_hits, media_flags, links, tier, velocity });
+          // extra penalty for many links
+          const linkCount = links.length || 0;
+          if (linkCount > 0) risk = Math.max(0, Math.min(100, risk + Math.min(25, (linkCount - 1) * (tier === 'T0' ? 10 : 6))));
           const routing = route({ risk, rule_hits, media_flags, tier });
           const policy_labels = rule_hits.P0.length ? ['P0'] : (rule_hits.P1.length ? ['P1'] : ['P2']);
 
@@ -752,6 +1099,123 @@ export default {
         }
       }
 
+      // Admin service: purge posts/replies and their related KV entries
+      if (service === 'admin') {
+        const authBearer = () => {
+          const token = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
+          const expected = (env.MOD_TOKEN || '').trim();
+          if (expected && token !== expected) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: baseHeaders });
+          }
+          return null;
+        };
+
+        async function readJson(req) { try { return await req.json(); } catch { return null; } }
+
+        async function purgePost(id) {
+          let deleted = 0;
+          const postKey = `forum:post:${id}`;
+          const postRaw = await env.STATS.get(postKey);
+          if (!postRaw) return { found: false, deleted };
+          // delete post
+          await env.STATS.delete(postKey); deleted++;
+          // delete replies under this post
+          const rList = await env.STATS.list({ prefix: `forum:reply:${id}:` });
+          for (const k of rList.keys) {
+            await env.STATS.delete(k.name); deleted++;
+            const rid = k.name.split(':').pop();
+            if (rid) { await env.STATS.delete(`forum:replyid:${rid}`); deleted++; }
+          }
+          // delete moderation artifacts
+          await env.STATS.delete(`modq:${id}`);
+          const logs = await env.STATS.list({ prefix: `modlog:${id}:` });
+          for (const k of logs.keys) { await env.STATS.delete(k.name); deleted++; }
+          return { found: true, deleted };
+        }
+
+        async function purgeReply(id) {
+          let deleted = 0;
+          const postId = await env.STATS.get(`forum:replyid:${id}`);
+          if (!postId) return { found: false, deleted };
+          const rKey = `forum:reply:${postId}:${id}`;
+          await env.STATS.delete(rKey); deleted++;
+          await env.STATS.delete(`forum:replyid:${id}`); deleted++;
+          await env.STATS.delete(`modq:${id}`);
+          const logs = await env.STATS.list({ prefix: `modlog:${id}:` });
+          for (const k of logs.keys) { await env.STATS.delete(k.name); deleted++; }
+          return { found: true, deleted };
+        }
+
+        if (action === 'purge') {
+          if (request.method !== 'POST') return bad('POST required');
+          const authErr = authBearer(); if (authErr) return authErr;
+          const body = await readJson(request) || {};
+          const item_id = body.item_id || body.id || '';
+          const type = (body.type || '').toLowerCase();
+          if (!item_id) return bad('Missing item_id');
+          let res = { ok: true, item_id, mode: '', details: {} };
+          if (type === 'post') {
+            const r = await purgePost(item_id); res.mode = 'post'; res.details = r; if (!r.found) return notFound('Post not found');
+            return new Response(JSON.stringify(res), { headers: baseHeaders });
+          }
+          if (type === 'reply') {
+            const r = await purgeReply(item_id); res.mode = 'reply'; res.details = r; if (!r.found) return notFound('Reply not found');
+            return new Response(JSON.stringify(res), { headers: baseHeaders });
+          }
+          // auto-detect
+          const asPost = await purgePost(item_id);
+          if (asPost.found) { res.mode = 'post'; res.details = asPost; return new Response(JSON.stringify(res), { headers: baseHeaders }); }
+          const asReply = await purgeReply(item_id);
+          if (asReply.found) { res.mode = 'reply'; res.details = asReply; return new Response(JSON.stringify(res), { headers: baseHeaders }); }
+          return notFound('Item not found');
+        }
+
+        if (action === 'ban') {
+          if (request.method !== 'POST') return bad('POST required');
+          const authErr = authBearer(); if (authErr) return authErr;
+          const body = await readJson(request) || {};
+          const ns = normalizeNs(url.hostname || '');
+          const type = (body.type || '').toLowerCase();
+          const value = (body.value || '').toString().trim();
+          const ttl_h = Number(body.ttl_hours || 0);
+          const reason = (body.reason || '').toString();
+          if (!ns || !type || !value) return bad('Missing ns/type/value');
+          const key = type === 'ip' ? `ban:ip:${ns}:${value}` : (type === 'user' ? `ban:user:${ns}:${value}` : '');
+          if (!key) return bad('type must be ip or user');
+          const rec = { reason, created_at: Date.now(), reviewer: 'admin' };
+          const opts = ttl_h > 0 ? { expirationTtl: Math.max(1, Math.floor(ttl_h * 3600)) } : {};
+          await env.STATS.put(key, JSON.stringify(rec), opts);
+          return new Response(JSON.stringify({ ok: true, key, ttl_hours: ttl_h||null }), { headers: baseHeaders });
+        }
+
+        if (action === 'unban') {
+          if (request.method !== 'POST') return bad('POST required');
+          const authErr = authBearer(); if (authErr) return authErr;
+          const body = await readJson(request) || {};
+          const ns = normalizeNs(url.hostname || '');
+          const type = (body.type || '').toLowerCase();
+          const value = (body.value || '').toString().trim();
+          if (!ns || !type || !value) return bad('Missing ns/type/value');
+          const key = type === 'ip' ? `ban:ip:${ns}:${value}` : (type === 'user' ? `ban:user:${ns}:${value}` : '');
+          if (!key) return bad('type must be ip or user');
+          await env.STATS.delete(key);
+          return new Response(JSON.stringify({ ok: true, key }), { headers: baseHeaders });
+        }
+
+        if (action === 'bans') {
+          const authErr = authBearer(); if (authErr) return authErr;
+          const ns = normalizeNs(url.hostname || '');
+          const out = { ip: [], user: [] };
+          const ipList = await env.STATS.list({ prefix: `ban:ip:${ns}:` });
+          for (const k of ipList.keys) { const v = await env.STATS.get(k.name); if (v) out.ip.push({ key: k.name, ...(JSON.parse(v)||{}) }); }
+          const userList = await env.STATS.list({ prefix: `ban:user:${ns}:` });
+          for (const k of userList.keys) { const v = await env.STATS.get(k.name); if (v) out.user.push({ key: k.name, ...(JSON.parse(v)||{}) }); }
+          return new Response(JSON.stringify(out), { headers: baseHeaders });
+        }
+
+        return notFound();
+      }
+
       return notFound();
     } catch (e) {
       // Fail safe CORS: echo Origin if available to avoid wildcard with credentials
@@ -770,3 +1234,5 @@ export default {
     }
   }
 };
+
+

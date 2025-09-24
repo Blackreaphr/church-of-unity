@@ -1,0 +1,86 @@
+﻿# Basic setup
+RewriteEngine On
+Options -MultiViews
+DirectoryIndex index.html
+
+# MIME overrides
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType text/javascript .mjs
+  AddType text/css .css
+  AddType image/svg+xml .svg
+  AddType image/x-icon .ico
+  AddType image/avif .avif
+  AddType image/webp .webp
+  AddType font/woff2 .woff2
+  AddType application/json .json
+  AddType text/plain .txt
+  AddType application/xml .xml
+</IfModule>
+
+# 0a) Asset path normalization and favicon alias
+RewriteCond %{REQUEST_URI} ^/.+/assets/
+RewriteRule ^(.+)/assets/(.*)$ /assets/$2 [L]
+
+RewriteRule ^(.*/)?assets/symbol\.png$ /assets/symbol.svg [L]
+RewriteRule ^favicon\.ico$ /assets/symbol-32.png [L]
+RewriteRule ^favicon\.png$ /assets/symbol-32.png [L]
+
+# 0b) Fallback for pruned/old hashed stats chunks
+# If a specific hashed chunk like /assets/stats-XXXX.js is requested but missing,
+# serve the stable back-compat shim which delegates to /site/stats.js
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^assets/stats-[A-Za-z0-9._-]+\.js$ /stats.js [L]
+
+# 0) Canonical host: force one hostname (choose the one you actually use)
+# If your canonical is www:
+RewriteCond %{HTTP_HOST} !^www\.thechurchofunity\.com$ [NC]
+RewriteRule ^ https://www.thechurchofunity.com%{REQUEST_URI} [R=301,L]
+
+# 1) Canonical path redirects
+# Redirect /index.html -> /
+RewriteCond %{THE_REQUEST} \s/+(.*)index\.html[\s?] [NC]
+RewriteRule ^(.*)index\.html$ /$1 [R=301,L]
+
+# 2a) Canonical: add trailing slash for forum and forum-feed directories
+# Ensures /forum/<slug> and /forum-feed/<section> redirect to .../ when a matching folder exists
+RewriteCond %{REQUEST_URI} ^/(forum|forum-feed)/.+ [NC]
+RewriteCond %{REQUEST_URI} !/$
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.+)$ /$1/ [R=301,L]
+
+# 2b) Fallbacks for forum-feed sections when folder is missing (serve single feed page)
+# If the section folder doesn't exist yet on the server, gracefully serve the feed shell with params
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^forum-feed/study-guides/?$ /forum-feed.html?from=study-guides&cat=study-guides [L,QSA]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^forum-feed/latest/?$ /forum-feed.html?from=browse-latest&latest=1 [L,QSA]
+
+# 2) Directory-style routing: /path -> /path/index.html when a folder exists
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.+?)/?$ $1/index.html [L]
+
+# 3) Extensionless routing: /page -> /page.html if that file exists
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L]
+
+# 4) Optional: map trailing-slash page to extensionless if a file exists
+# Only when there is a real .html file (and not inside forum directories)
+RewriteCond %{REQUEST_URI} !^/forum(/|$)
+RewriteCond %{REQUEST_URI} !^/forum-feed(/|$)
+RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+RewriteRule ^(.+?)/$ $1 [R=301,L]
+
+# 5) Make 404.html uncached so the inline redirect logic always runs
+<Files "404.html">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "no-store, max-age=0"
+    Header set Pragma no-cache
+    Header set Expires 0
+  </IfModule>
+</Files>
+

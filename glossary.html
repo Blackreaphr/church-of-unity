@@ -10,40 +10,21 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="assets/symbol.png" />`n    <link rel="manifest" href="/site.webmanifest" />`n    <script type="module" src="/site/meta.js?v=202509101828"></script>`n    <script type="module" src="/site/search.js"></script>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="/assets/symbol.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site-gNYj6CAS.webmanifest" />
+    <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
+    <script type="module" src="/site/search.js?v=202509112130"></script>
+    <script type="module" src="/main.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/main-8BzZRDYf.css">
+    <script type="module" src="/site/reader.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <canvas id="bgCanvas" aria-hidden="true"></canvas>
     <header class="hero">
       <div class="container hero-inner">
-        <div class="symbol-wrap" aria-hidden="true">
-          <svg id="emblem" class="symbol" viewBox="0 0 200 200" role="img" aria-label="Animated emblem">
-            <defs>
-              <filter id="warp" x="-20%" y="-20%" width="140%" height="140%">
-                <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.001" numOctaves="2" seed="4" result="noise"/>
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
-              </filter>
-              <linearGradient id="strokeGrad" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0%" stop-color="#e23a4b"/>
-                <stop offset="100%" stop-color="#ffffff"/>
-              </linearGradient>
-            </defs>
-            <g id="ordered" stroke="url(#strokeGrad)" stroke-width="2.2" fill="none">
-              <circle cx="100" cy="100" r="78" opacity="0.8"/>
-              <circle cx="100" cy="100" r="52" opacity="0.55" stroke-dasharray="2 6"/>
-              <g id="radials" opacity="0.45">
-                <line x1="100" y1="24" x2="100" y2="176"/>
-                <line x1="24" y1="100" x2="176" y2="100"/>
-                <line x1="38" y1="38" x2="162" y2="162"/>
-                <line x1="162" y1="38" x2="38" y2="162"/>
-              </g>
-            </g>
-            <g id="spiralWrap" filter="url(#warp)">
-              <path id="spiral" d="" stroke="url(#strokeGrad)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-            </g>
-          </svg>
+                        <div class="symbol-wrap" aria-hidden="true">
+          <img id="emblem" class="symbol" src="/assets/symbol.svg" alt="" loading="lazy" decoding="async" />
         </div>
         <div class="hero-copy">
           <h1 class="site-title">Glossary</h1>
@@ -59,6 +40,7 @@
           <a href="/practice.html">Practice</a>
           <a href="/texts-library.html">Texts</a>
           <a href="/inquiry-forum.html">Inquiry</a>
+          <a href="/forum.html">Forum</a>
           <a href="/about.html">About</a>
           <details class="more">
             <summary>More</summary>
@@ -70,6 +52,7 @@
               <a role="menuitem" href="/heaven-hell-journey.html">Heaven, Hell, and the Human Journey</a>
               <a role="menuitem" href="/names-of-god.html">The Many Names of God</a>
               <a role="menuitem" href="/sermons.html">Sermons and Reflections</a>
+              <a role='menuitem' href='/purgatory.html'>Purgatory</a>
               <a role="menuitem" href="/glossary.html">Glossary</a>
               <a role="menuitem" href="/about.html#governance">Governance</a>
             </div>
@@ -131,9 +114,11 @@
     <footer class="footer container">
       <small>&copy; <span id="year"></span> Church of Unity</small>
     </footer>
-    <script type="module" src="/main.js"></script>
   </body>
  </html>
+
+
+
 
 
 

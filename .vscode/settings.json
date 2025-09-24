@@ -1,0 +1,15 @@
+{
+  "files.watcherExclude": {
+    "**/dist/**": true,
+    "**/assets/**": true,
+    "**/node_modules/**": true
+  },
+  "search.exclude": {
+    "**/dist/**": true,
+    "**/assets/**": true,
+    "**/node_modules/**": true
+  },
+  "files.associations": {
+    "**/assets/*.js": "plaintext"
+  }
+}

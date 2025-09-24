@@ -1,0 +1,63 @@
+﻿name: Apply Moderation Decision
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: "Worker domain (e.g., thechurchofunity.com or <name>.workers.dev)"
+        required: true
+        default: "thechurchofunity.com"
+      item_id:
+        description: "Queue item_id"
+        required: true
+      macro_id:
+        description: "Macro (remove|edit_request|age_gate_blur|limit_distribution|warning|temp_suspend|perm_ban|kill_switch)"
+        required: true
+        default: "limit_distribution"
+      reviewer_id:
+        description: "Reviewer identifier (for audit)"
+        required: false
+        default: "github-action"
+      fields:
+        description: "Optional JSON fields for the decision"
+        required: false
+        default: "{}"
+
+jobs:
+  decide:
+    runs-on: ubuntu-latest
+    env:
+      MOD_TOKEN: ${{ secrets.MOD_TOKEN }}
+    steps:
+      - name: Validate secret
+        run: |
+          if [ -z "$MOD_TOKEN" ]; then
+            echo "MOD_TOKEN GitHub secret is missing. Add it in Settings > Secrets and variables > Actions." >&2
+            exit 1
+          fi
+
+      - name: Post decision
+        env:
+          DOMAIN: ${{ inputs.domain }}
+          ITEM: ${{ inputs.item_id }}
+          MACRO: ${{ inputs.macro_id }}
+          REVIEWER: ${{ inputs.reviewer_id }}
+          FIELDS: ${{ inputs.fields }}
+          MOD_TOKEN: ${{ env.MOD_TOKEN }}
+        run: |
+          set -e
+          URL="https://${DOMAIN}/api/moderation/decision"
+          BODY=$(jq -n --arg item "$ITEM" --arg macro "$MACRO" --arg reviewer "$REVIEWER" --argjson fields "$FIELDS" '{item_id:$item, macro_id:$macro, reviewer_id:$reviewer, fields:$fields}')
+          echo "Posting decision to $URL for item $ITEM macro $MACRO"
+          echo "$BODY" > decision.json
+          curl -sS --fail-with-body -H "Authorization: Bearer ${MOD_TOKEN}" -H "Content-Type: application/json" -d @decision.json "$URL" -o decision-result.json
+          echo "Done."
+
+      - name: Upload result artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mod-queue-decision-result
+          path: decision-result.json
+          if-no-files-found: error
+
+

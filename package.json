@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "postbuild": "node scripts/stamp-version.mjs dist",
+    "postbuild": "node scripts/stamp-version.mjs dist && node scripts/create-guide-fallbacks.mjs dist && node scripts/copy-data.mjs dist && node scripts/copy-htaccess.mjs dist && node scripts/copy-htaccess.mjs dist && node scripts/scrub-polyfill.mjs dist && node scripts/fix-css.mjs && node scripts/alias-css.mjs && node scripts/copy-guides-css.mjs",
     "stamp": "node scripts/stamp-version.mjs . dist",
-    "build:stamp": "vite build && node scripts/stamp-version.mjs dist",
+    "build:stamp": "vite build && node scripts/build-forum-essays.mjs && node scripts/stamp-version.mjs dist && node scripts/create-guide-fallbacks.mjs dist && node scripts/create-forum-fallbacks.mjs dist && node scripts/create-forum-assets-fallbacks.mjs dist && node scripts/copy-data.mjs dist && node scripts/copy-htaccess.mjs dist && node scripts/fix-favicons.mjs dist",
+    "deploy:hostinger": "node scripts/deploy-sftp.mjs",
+    "deploy:live": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy.ps1",
+    "deploy:prod": "node scripts/deploy-prod.mjs",
     "deploy:worker": "wrangler deploy --config cloudflare/stats-worker/wrangler.toml",
     "deploy": "npm run build && npm run stamp && npm run deploy:worker",
     "preview": "vite preview",
@@ -20,6 +23,9 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@types/node": "^24.5.2",
+    "puppeteer": "^24.20.0",
+    "ssh2-sftp-client": "^12.0.1",
     "vite": "^7.1.4"
   }
 }

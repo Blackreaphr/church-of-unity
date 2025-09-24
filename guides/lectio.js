@@ -1,12 +1,21 @@
 // Lightweight passage picker for Lectio Divina
 // Rotates suggestions daily and allows simple navigation.
 
-import passagesData from '/data/lectio-passages.json';
+async function loadPassages() {
+  try {
+    const res = await fetch('/data/lectio-passages.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to load passages');
+    const json = await res.json();
+    return Array.isArray(json) ? json : [];
+  } catch (_) {
+    return [];
+  }
+}
 
 function dayIndex() {
   const d = new Date();
   const start = new Date(d.getFullYear(), 0, 0);
-  const diff = d - start;
+  const diff = d.getTime() - start.getTime();
   const oneDay = 1000 * 60 * 60 * 24;
   return Math.floor(diff / oneDay);
 }
@@ -35,34 +44,33 @@ function setupUI(all) {
   }
 
   function refilter() {
-    const v = (catSel.value || 'all').toLowerCase();
-    filtered = v === 'all' ? all : all.filter(x => x.category === v);
+    let v = 'all';
+    if (catSel instanceof HTMLSelectElement) v = (catSel.value || 'all').toLowerCase();
+    filtered = v === 'all' ? all : all.filter(x => (x.category || '').toLowerCase() === v);
     if (!filtered.length) filtered = all;
     selectByDay();
   }
 
-  prevBtn.addEventListener('click', () => {
+  if (prevBtn) prevBtn.addEventListener('click', () => {
     idx = (idx - 1 + filtered.length) % filtered.length;
     render(filtered[idx]);
   });
-  nextBtn.addEventListener('click', () => {
+  if (nextBtn) nextBtn.addEventListener('click', () => {
     idx = (idx + 1) % filtered.length;
     render(filtered[idx]);
   });
-  randBtn.addEventListener('click', () => {
+  if (randBtn) randBtn.addEventListener('click', () => {
     idx = Math.floor(Math.random() * filtered.length);
     render(filtered[idx]);
   });
-  catSel.addEventListener('change', refilter);
+  if (catSel instanceof HTMLSelectElement) catSel.addEventListener('change', refilter);
 
   refilter();
 }
 
-function boot() {
-  try {
-    const list = Array.isArray(passagesData) ? passagesData : [];
-    if (list.length) return setupUI(list);
-  } catch {}
+async function boot() {
+  const list = await loadPassages();
+  if (list.length) return setupUI(list);
   // graceful fallback
   render({ ref: 'John 1:5', text: 'And the light shineth in darkness; and the darkness comprehended it not.', category: 'scripture' });
 }

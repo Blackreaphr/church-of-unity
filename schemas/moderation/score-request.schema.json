@@ -1,6 +1,6 @@
 {
   "$id": "https://thechurchofunity.com/schemas/moderation/score-request.schema.json",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Moderation Score Request",
   "type": "object",
   "required": ["item_id", "user_id", "content_type", "user_context"],
@@ -59,4 +59,3 @@
     { "required": ["media"], "properties": { "media": { "minItems": 1 } } }
   ]
 }
-

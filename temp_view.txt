@@ -1,0 +1,50 @@
+﻿name: Deploy Cloudflare Worker
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'cloudflare/stats-worker/**'
+      - '.github/workflows/deploy-cloudflare-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Precheck secrets
+        id: precheck
+        shell: bash
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          RECOVERY_SECRET: ${{ secrets.RECOVERY_SECRET }}
+        run: |
+          if [ -n "${CF_API_TOKEN}" ]; then
+            echo "has_api_token=true" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -n "${RECOVERY_SECRET}" ]; then
+            echo "has_recovery_secret=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy Worker (with secret)
+        if: ${{ steps.precheck.outputs.has_api_token == 'true' && steps.precheck.outputs.has_recovery_secret == 'true' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: cloudflare/stats-worker
+          command: deploy --config wrangler.toml
+          secrets: |
+            RECOVERY_SECRET
+        env:
+          RECOVERY_SECRET: ${{ secrets.RECOVERY_SECRET }}
+
+      - name: Deploy Worker (no secret)
+        if: ${{ steps.precheck.outputs.has_api_token == 'true' && steps.precheck.outputs.has_recovery_secret != 'true' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: cloudflare/stats-worker
+          command: deploy --config wrangler.toml

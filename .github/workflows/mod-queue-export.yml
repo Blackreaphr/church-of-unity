@@ -1,0 +1,54 @@
+name: Export Moderation Queue
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: "Worker domain (e.g., thechurchofunity.com or <name>.workers.dev)"
+        required: true
+        default: "thechurchofunity.com"
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate secret
+        run: |
+          if [ -z "${{ secrets.MOD_TOKEN }}" ]; then
+            echo "MOD_TOKEN GitHub secret is missing. Add it in Settings → Secrets and variables → Actions." >&2
+            exit 1
+          fi
+
+      - name: Fetch moderation queue (sanitized)
+        env:
+          DOMAIN: ${{ inputs.domain }}
+          MOD_TOKEN: ${{ secrets.MOD_TOKEN }}
+        run: |
+          set -e
+          URL="https://${DOMAIN}/api/moderation/queue"
+          echo "Fetching: $URL"
+          # Using --fail-with-body so non-200 prints body and fails
+          curl -sS --fail-with-body -H "Authorization: Bearer ${MOD_TOKEN}" "$URL" -o mod-queue-report.json
+          # Basic shape validation and sort by risk_score descending
+          node -e '
+            const fs=require("fs");
+            const data=JSON.parse(fs.readFileSync("mod-queue-report.json","utf8"));
+            const items=Array.isArray(data.items)?data.items:[];
+            items.sort((a,b)=>(b.risk_score||0)-(a.risk_score||0));
+            const out={domain:process.env.DOMAIN, generated_at:new Date().toISOString(), count:items.length, items:items.map(x=>({
+              item_id:x.item_id||"", user_id:x.user_id||"", risk_score:+x.risk_score||0, policy_labels:x.policy_labels||[], rule_hits:x.rule_hits||{P0:[],P1:[]}, media_flags:x.media_flags||[], link_risk:x.link_risk||"low", routing:x.routing||{}, created_at:+x.created_at||0, text_preview:(x.text_preview||"").toString().slice(0,600)
+            }))};
+            fs.writeFileSync("mod-queue-report.json", JSON.stringify(out,null,2));
+          '
+          echo "Report created: mod-queue-report.json"
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mod-queue-report
+          path: mod-queue-report.json
+          if-no-files-found: error
+

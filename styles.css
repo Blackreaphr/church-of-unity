@@ -328,7 +328,7 @@ p { margin: 0.5rem 0 0; }
 }
 .stat-number-wrap { font-weight: 800; font-size: 20px; letter-spacing: 0.3px; line-height: 1; }
 .stat-number { display: inline-block; min-width: 1ch; }
-.stat-suffix { margin-left: 1px; }
+.stat-suffix { margin-left: 1px; display: none; }
 .stat-label { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; }
 
 /* playful pop when interacting */
@@ -337,4 +337,32 @@ p { margin: 0.5rem 0 0; }
   0% { transform: scale(1); }
   40% { transform: scale(1.12); }
   100% { transform: scale(1.02); }
+}
+
+/* Forum: new topic form */
+.form { display: grid; gap: 12px; align-items: start; }
+.form label { display: grid; gap: 6px; color: var(--muted); font-weight: 600; font-size: 14px; }
+.form input, .form textarea {
+  width: 100%;
+  background: #0a0b0f;
+  color: var(--text);
+  border: 1px solid #1a1c22;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+}
+.form input:focus, .form textarea:focus { outline: none; border-color: #333843; box-shadow: 0 0 0 3px rgba(226,58,75,0.12); }
+.form textarea { min-height: 220px; resize: vertical; }
+.form #title { font-weight: 700; }
+
+/* On wider screens, place Category and Tags on one row.
+   Keep Title and Body full width for clarity. */
+@media (min-width: 800px){
+  .form { grid-template-columns: 1fr 1fr; }
+  .form label:nth-of-type(1) { grid-column: 1 / -1; }
+  .form label:nth-of-type(2) { grid-column: 1; }
+  .form label:nth-of-type(3) { grid-column: 2; }
+  .form label:nth-of-type(4) { grid-column: 1 / -1; }
+  .form > :not(label) { grid-column: 1 / -1; }
 }

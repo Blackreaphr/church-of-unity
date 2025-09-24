@@ -1,6 +1,12 @@
 // Minimal moderation queue UI + scoring sandbox
+(function(){
+'use strict';
 
-const $ = (sel) => document.querySelector(sel);
+/**
+ * @param {string} sel
+ * @returns {any}
+ */
+const qs = (sel) => document.querySelector(sel);
 const tokenKey = 'mod:token';
 
 function getToken() {
@@ -74,7 +80,7 @@ function macroOptions() {
 }
 
 function renderQueue(items) {
-  const list = $('#queueList');
+  const list = qs('#queueList');
   list.innerHTML = '';
   if (!items.length) {
     list.innerHTML = '<div class="muted">No items in queue.</div>';
@@ -126,30 +132,30 @@ function renderQueue(items) {
 async function init() {
   // Token controls
   const tok = getToken();
-  $('#tokenInput').value = tok;
-  $('#saveTokenBtn').addEventListener('click', () => { setToken($('#tokenInput').value || ''); alert('Saved'); });
-  $('#clearTokenBtn').addEventListener('click', () => { setToken(''); $('#tokenInput').value=''; alert('Cleared'); });
+  qs('#tokenInput').value = tok;
+  qs('#saveTokenBtn').addEventListener('click', () => { setToken(qs('#tokenInput').value || ''); alert('Saved'); });
+  qs('#clearTokenBtn').addEventListener('click', () => { setToken(''); qs('#tokenInput').value=''; alert('Cleared'); });
 
   // Queue
-  $('#refreshQueueBtn').addEventListener('click', async () => {
+  qs('#refreshQueueBtn').addEventListener('click', async () => {
     try { renderQueue(await fetchQueue()); } catch (e) { alert('Queue load failed'); }
   });
   // Load once on open
   try { renderQueue(await fetchQueue()); } catch {}
 
   // Scoring sandbox
-  $('#scoreBtn').addEventListener('click', async () => {
-    const text = $('#textInput').value;
-    const trust_tier = $('#tierSelect').value || 'T0';
-    const tags = ($('#tagsInput').value || '').split(',').map(s => s.trim()).filter(Boolean);
-    $('#scoreStatus').textContent = 'Scoring…';
+  qs('#scoreBtn').addEventListener('click', async () => {
+    const text = qs('#textInput').value;
+    const trust_tier = qs('#tierSelect').value || 'T0';
+    const tags = (qs('#tagsInput').value || '').split(',').map(s => s.trim()).filter(Boolean);
+    qs('#scoreStatus').textContent = 'Scoring…';
     try {
       const out = await scoreDraft({ text, tags, trust_tier });
-      $('#scoreOut').textContent = JSON.stringify(out, null, 2);
+      qs('#scoreOut').textContent = JSON.stringify(out, null, 2);
     } catch (e) {
-      $('#scoreOut').textContent = 'Error: ' + (e && e.message ? e.message : e);
+      qs('#scoreOut').textContent = 'Error: ' + (e && e.message ? e.message : e);
     } finally {
-      $('#scoreStatus').textContent = '';
+      qs('#scoreStatus').textContent = '';
     }
   });
 }
@@ -160,3 +166,4 @@ if (document.readyState === 'loading') {
   init();
 }
 
+})();

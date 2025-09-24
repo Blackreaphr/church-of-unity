@@ -11,6 +11,7 @@ on:
       - 'forum/**'
       - 'forum-feed/**'
       - 'guides/**'
+      - '.htaccess'
       - '*.html'
       - 'styles.css'
       - 'main.js'
@@ -23,6 +24,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      REMOTE_DIR: ${{ secrets.HST_REMOTE_DIR || 'domains/thechurchofunity.com/public_html' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,12 +57,26 @@ jobs:
       - name: Build (with version stamping)
         run: npm run build:stamp
 
+      - name: Copy root assets to dist (css/js/site)
+        run: |
+          mkdir -p dist
+          # Copy top-level assets that are referenced by absolute paths
+          [ -f styles.css ] && cp -f styles.css dist/styles.css || true
+          [ -f main.js ] && cp -f main.js dist/main.js || true
+          [ -d site ] && rsync -a site/ dist/site/ || true
+          [ -d assets ] && rsync -a assets/ dist/assets/ || true
+
       - name: Verify build artifacts
         run: |
           echo "Listing dist/ contents:"
           ls -la dist || true
           echo "Sample HTML head:"
           (head -n 40 dist/index.html || true) | sed -n '1,12p'
+          echo "Check purgatory files exist:"
+          [ -f dist/purgatory.html ] && echo "OK: dist/purgatory.html" || (echo "MISSING: dist/purgatory.html" && exit 1)
+          [ -f dist/purgatory/index.html ] && echo "OK: dist/purgatory/index.html" || (echo "MISSING: dist/purgatory/index.html" && exit 1)
+
+      # REMOTE_DIR is set at job-level env with a fallback above
 
       - name: Install lftp for preflight
         run: sudo apt-get update && sudo apt-get install -y lftp
@@ -71,7 +88,7 @@ jobs:
           P: ${{ secrets.HST_PORT }}
           U: ${{ secrets.HST_USER }}
           W: ${{ secrets.HST_PASS }}
-          R: ${{ secrets.HST_REMOTE_DIR }}
+          R: ${{ env.REMOTE_DIR }}
         run: |
           set -e
           echo "Secrets presence (masked):"
@@ -91,9 +108,8 @@ jobs:
         with:
           host: ${{ secrets.HST_HOST }}
           port: ${{ secrets.HST_PORT }}
-          protocol: sftp
-          username: ${{ secrets.HST_USER }}
-          password: ${{ secrets.HST_PASS }}
+          user: ${{ secrets.HST_USER }}
+          pass: ${{ secrets.HST_PASS }}
           localDir: dist
-          remoteDir: ${{ secrets.HST_REMOTE_DIR }}
-          args: --verbose --parallel=8 --exclude-glob .git* --exclude-glob .github/** --exclude-glob cloudflare/** --exclude-glob node_modules/** --exclude-glob scripts/** --exclude-glob *.map --exclude-glob *.md --delete
+          remoteDir: ${{ env.REMOTE_DIR }}
+          options: --verbose --parallel=8 --include-glob .htaccess --exclude-glob .git* --exclude-glob .github/** --exclude-glob cloudflare/** --exclude-glob node_modules/** --exclude-glob scripts/** --exclude-glob *.map --exclude-glob *.md --delete

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": true,
+    "lib": ["ES2020", "DOM"],
+    "types": [],
+    "skipLibCheck": true,
+    "typeRoots": ["./types", "./node_modules/@types"]
+  },
+  "typeAcquisition": { "enable": true },
+  "exclude": [
+    "dist/**",
+    "assets/**",
+    "node_modules/**"
+  ]
+}

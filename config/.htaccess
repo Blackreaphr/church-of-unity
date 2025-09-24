@@ -1,0 +1,20 @@
+RewriteEngine On
+
+# 1) Canonical: /page.html -> /page (skip forum to keep helper pages working)
+RewriteCond %{THE_REQUEST} \s/([^\s?]+)\.html[\s?] [NC]
+RewriteCond %1 !^forum/ [NC]
+RewriteRule ^ %1 [R=301,L]
+
+# 2) Directory-style routing: /path -> /path/index.html when a folder exists
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.+?)/?$ $1/index.html [L]
+
+# 3) Extensionless routing: /page -> /page.html if that file exists
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+?)/?$ $1.html [L]
+
+# 4) Optional: map trailing-slash page to extensionless if a file exists
+RewriteCond %{DOCUMENT_ROOT}/%1.html -f
+RewriteRule ^(.+?)/$ %1 [R=301,L]
+

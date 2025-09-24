@@ -11,11 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="assets/symbol.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <script type="module" src="/site/meta.js?v=202509101828"></script>
-    <script type="module" src="/site/search.js"></script>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="/assets/symbol.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site-gNYj6CAS.webmanifest" />
     <style>
       .forum-hero-actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
       .btn-primary { background: var(--accent); color:#fff; border:1px solid var(--accent); padding:8px 12px; border-radius:10px; text-decoration:none; display:inline-block; }
@@ -45,6 +42,12 @@
       .code-snippet { background:#0a0b0f; border:1px solid var(--border); border-radius:10px; padding:10px; overflow:auto; max-height: 260px; }
       @media (max-width: 960px){ .forum-grid { grid-template-columns: 1fr; } .forum-controls { width:100%; margin-left:0; } .forum-controls .search-input { flex:1; width:auto; }}
     </style>
+    <script type="module" src="/site/forum.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+    
+    
+    <link rel="modulepreload" href="/main.js">
+    <link rel="stylesheet" crossorigin href="/assets/main-8BzZRDYf.css">
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -52,38 +55,14 @@
 
     <header class="hero">
       <div class="container hero-inner">
-        <div class="symbol-wrap" aria-hidden="true">
-          <svg id="emblem" class="symbol" viewBox="0 0 200 200" role="img" aria-label="Animated emblem">
-            <defs>
-              <filter id="warp" x="-20%" y="-20%" width="140%" height="140%">
-                <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.001" numOctaves="2" seed="4" result="noise"/>
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
-              </filter>
-              <linearGradient id="strokeGrad" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0%" stop-color="#e23a4b"/>
-                <stop offset="100%" stop-color="#ffffff"/>
-              </linearGradient>
-            </defs>
-            <g id="ordered" stroke="url(#strokeGrad)" stroke-width="2.2" fill="none">
-              <circle cx="100" cy="100" r="78" opacity="0.8"/>
-              <circle cx="100" cy="100" r="52" opacity="0.55" stroke-dasharray="2 6"/>
-              <g id="radials" opacity="0.45">
-                <line x1="100" y1="24" x2="100" y2="176"/>
-                <line x1="24" y1="100" x2="176" y2="100"/>
-                <line x1="38" y1="38" x2="162" y2="162"/>
-                <line x1="162" y1="38" x2="38" y2="162"/>
-              </g>
-            </g>
-            <g id="spiralWrap" filter="url(#warp)">
-              <path id="spiral" d="" stroke="url(#strokeGrad)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-            </g>
-          </svg>
+                        <div class="symbol-wrap" aria-hidden="true">
+          <img id="emblem" class="symbol" src="/assets/symbol.svg" alt="" loading="lazy" decoding="async" />
         </div>
         <div class="hero-copy">
           <h1 class="site-title">Forum Feed</h1>
           <p class="tagline">Latest topics and categories</p>
           <div class="forum-hero-actions">
-            <a class="btn-primary" href="/forum/welcome.html">Start a topic</a>
+            <a class="btn-primary" href="/forum-start/">Start a topic</a>
           </div>
         </div>
       </div>
@@ -124,10 +103,10 @@
             <h3 style="margin:0 0 8px 0; font-family: var(--font-serif);">Key Links</h3>
             <ul class="cat-list" aria-label="Key links">
               <li><a href="/start-here.html"><span>Start Here</span><span class="muted">guide</span></a></li>
-              <li><a href="/forum/guidelines.html"><span>Guidelines</span><span class="muted">rules</span></a></li>
-              <li><a href="/forum/announcements.html"><span>Announcements</span><span class="muted">news</span></a></li>
-              <li><a href="/forum/help.html"><span>Help &amp; Support</span><span class="muted">contact</span></a></li>
-              <li><a href="/forum/prayer-and-reflections.html"><span>Prayer &amp; Self-Reflection</span><span class="muted">category</span></a></li>
+              <li><a href="/forum-guidelines/"><span>Guidelines</span><span class="muted">rules</span></a></li>
+              <li><a href="/forum-announcements/"><span>Announcements</span><span class="muted">news</span></a></li>
+              <li><a href="/forum-help/"><span>Help &amp; Support</span><span class="muted">contact</span></a></li>
+              <li><a href="/forum/prayer-and-reflections/"><span>Prayer &amp; Self-Reflection</span><span class="muted">category</span></a></li>
               <li><a href="/forum-feed/study-guides/"><span>Study Guides</span><span class="muted">category</span></a></li>
             </ul>
             <h3 style="margin:14px 0 6px 0; font-family: var(--font-serif);">About the Forum</h3>
@@ -198,17 +177,15 @@
             const slug = legacyCat.toLowerCase().replace(/&/g,'and').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
             const u = new URL(location.href); u.searchParams.delete('category'); u.searchParams.set('cat', slug); history.replaceState(null,'',u);
           }
+          // Infer category from path segments when absent (e.g., /forum-feed/study-guides/)
+          if (!catSlug) {
+            const path = (location.pathname || '').toLowerCase();
+            if (path.indexOf('/forum-feed/study-guides') === 0) catSlug = 'study-guides';
+          }
           if (view === 'browse-latest' || view === 'latest') {
             const u = new URL(location.href); u.searchParams.delete('view'); u.searchParams.set('latest','1'); history.replaceState(null,'',u);
           }
-          // Promote clean paths for key views
-          if (location.pathname === '/forum-feed.html') {
-            if (catSlug === 'study-guides') {
-              history.replaceState(null, '', '/forum-feed/study-guides/');
-            } else if (latestFlag === '1' || latestFlag === 'true') {
-              history.replaceState(null, '', '/forum-feed/latest/');
-            }
-          }
+          // Keep .html paths to avoid refresh 404s on hosts without rewrites
           if (!catSlug && metaCat) {
             catSlug = metaCat.toLowerCase().replace(/&/g,'and').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
           }
@@ -243,7 +220,7 @@
           if (cat) {
             if (h) h.textContent = cat;
             if (t) {
-              if (cat.toLowerCase() === 'study guides') t.textContent = 'Guides for practice and study';
+              if (cat.toLowerCase() === 'study guides') t.textContent = 'Discuss study guides: questions, insights, and tips.';
               else t.textContent = `Latest in ${cat}`;
             }
             document.title = `${cat} | ${site}`;
@@ -252,7 +229,7 @@
           }
 
           if (latestFlag === '1' || latestFlag === 'true') {
-            const label = 'Browse Latest';
+            const label = 'Latest';
             if (h) h.textContent = label;
             if (t) t.textContent = 'Newest across all categories';
             document.title = `${label} | ${site}`;
@@ -279,13 +256,13 @@
           const params = new URLSearchParams(location.search);
           const fromParam = (params.get('from') || '').trim().toLowerCase();
           const map = {
-            'start': { label: 'Back to Start a Topic', href: '/forum/welcome.html' },
-            'guidelines': { label: 'Back to Guidelines', href: '/forum/guidelines.html' },
-            'help': { label: 'Back to Help & Support', href: '/forum/help.html' },
-            'announcements': { label: 'Back to Announcements', href: '/forum/announcements.html' },
-            'prayer': { label: 'Back to Prayer & Self-Reflection', href: '/forum/prayer-and-reflections.html' },
+            'start': { label: 'Back to Start a Topic', href: '/forum-start/' },
+            'guidelines': { label: 'Back to Guidelines', href: '/forum-guidelines/' },
+            'help': { label: 'Back to Help & Support', href: '/forum-help/' },
+            'announcements': { label: 'Back to Announcements', href: '/forum-announcements/' },
+            'prayer': { label: 'Back to Prayer & Self-Reflection', href: '/forum/prayer-and-reflections/' },
             'study-guides': { label: 'Back to Study Guides', href: '/forum-feed/study-guides/' },
-            'browse-latest': { label: 'Back to Browse Latest', href: '/forum-feed/latest/' },
+            'browse-latest': { label: 'Back to Latest', href: '/forum-feed/latest/' },
           };
           function show(labelHref){
             const bar = document.getElementById('backBar');
@@ -300,17 +277,21 @@
             try {
               const u = new URL(ref);
               const path = u.pathname || '';
-              if (path.endsWith('/forum/welcome.html')) return show(map['start']);
-              if (path.endsWith('/forum/guidelines.html')) return show(map['guidelines']);
-              if (path.endsWith('/forum/help.html')) return show(map['help']);
-              if (path.endsWith('/forum/announcements.html')) return show(map['announcements']);
-              if (path.endsWith('/forum/prayer-and-reflections.html')) return show(map['prayer']);
+              if (path.endsWith('/forum-start/')) return show(map['start']);
+              if (path.endsWith('/forum-guidelines/')) return show(map['guidelines']);
+              if (path.endsWith('/forum-help/')) return show(map['help']);
+              if (path.endsWith('/forum-announcements/')) return show(map['announcements']);
+              if (path.endsWith('/forum/prayer-and-reflections/')) return show(map['prayer']);
             } catch (_) {}
           }
         } catch (_) {}
       })();
     </script>
-    <script type="module" src="/site/forum.js"></script>
-    <script type="module" src="/main.js"></script>
   </body>
  </html>
+
+
+
+
+
+

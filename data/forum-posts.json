@@ -1,4 +1,4 @@
-{
+﻿{
   "posts": [
     {
       "title": "Life and Death: Meaning, Return, and Choice",
@@ -36,7 +36,7 @@
     },
     {
       "title": "Welcome to the Forum",
-      "url": "/forum/welcome.html",
+      "url": "/forum-start/",
       "date": "2025-01-01",
       "lastReplyAt": "2025-01-01T12:00:00Z",
       "starter": "Editor",
@@ -81,7 +81,7 @@
     },
     {
       "title": "Community Guidelines",
-      "url": "/forum/guidelines.html",
+      "url": "/forum-guidelines/",
       "date": "2025-01-01",
       "lastReplyAt": "2025-01-01T12:00:00Z",
       "starter": "Editor",
@@ -93,7 +93,7 @@
     },
     {
       "title": "Help & Support",
-      "url": "/forum/help.html",
+      "url": "/forum-help/",
       "date": "2025-01-02",
       "lastReplyAt": "2025-01-02T12:00:00Z",
       "starter": "Team",
@@ -104,7 +104,7 @@
     },
     {
       "title": "Announcements",
-      "url": "/forum/announcements.html",
+      "url": "/forum-announcements/",
       "date": "2025-01-02",
       "lastReplyAt": "2025-01-02T12:00:00Z",
       "starter": "Editor",
@@ -115,7 +115,7 @@
     },
     {
       "title": "Prayer and Reflections",
-      "url": "/forum/prayer-and-reflections.html",
+      "url": "/forum/prayer-and-reflections/",
       "date": "2025-01-03",
       "lastReplyAt": "2025-01-03T12:00:00Z",
       "starter": "Editor",
@@ -159,3 +159,5 @@
     }
   ]
 }
+
+

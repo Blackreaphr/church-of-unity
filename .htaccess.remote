@@ -1,0 +1,117 @@
+# Basic setup
+RewriteEngine On
+Options -MultiViews
+DirectoryIndex index.html
+
+# 0a) Asset path normalization and favicon alias
+RewriteCond %{REQUEST_URI} ^/.+/assets/
+RewriteRule ^(.+)/assets/(.*)$ /assets/$2 [L]
+
+RewriteRule ^(.*/)?assets/symbol\.png$ /assets/symbol.svg [L]
+
+# 0) Canonical host: force one hostname (choose the one you actually use)
+# If your canonical is www:
+RewriteCond %{HTTP_HOST} !^www\.thechurchofunity\.com$ [NC]
+RewriteRule ^ https://www.thechurchofunity.com%{REQUEST_URI} [R=301,L]
+
+# 1) Canonical path redirects
+
+# /index.html → /
+RewriteCond %{THE_REQUEST} \s/+index\.html(?:[\s?]) [NC]
+RewriteRule ^ / [R=301,L]
+
+# *.html → extensionless (only when the browser explicitly asked for .html)
+# Use an absolute target and clear any querystring to avoid duplicates.
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.html(?:[\s?]) [NC]
+RewriteRule ^ /%1? [R=301,L]
+
+# 2) Directory slash normalization
+# If the request maps to a *real directory* but lacks a trailing slash, add it.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^(.+[^/])$ /$1/ [R=301,L]
+
+# For a directory request with a slash, serve its index.html explicitly if present.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_URI} !^/forum/welcome/?$\nRewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.*/)$ $1index.html [L]
+
+# 3) App-specific virtual subroutes (serve the shell page)
+
+# Forum URL normalization
+RewriteRule ^forum/welcome/?$ /forum/topic/ [R=301,L]
+RewriteRule ^forum/topic/?$ /forum/welcome/index.html [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^forum-feed/(.*)$ /forum-feed.html [L]
+
+# Direct forum root to the forum page when there's no folder index
+RewriteRule ^forum/?$ /forum.html [L]
+
+# 4) Explicit fallbacks for key routes (prefer folder index, else .html)
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(start-here|practice|texts-library|inquiry-forum)/?$ /$1/index.html [L]
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(start-here|practice|texts-library|inquiry-forum)/?$ /$1.html [L]
+
+# Forum subsections
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^forum/(welcome|guidelines|help|announcements|prayer-and-reflections)/?$ /forum/$1/index.html [L]
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^forum/(welcome|guidelines|help|announcements|prayer-and-reflections)/?$ /forum/$1.html [L]
+
+# 5) Serve existing files/dirs as-is (short-circuit early)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 6) Generic clean URLs: /path → /path.html (internal rewrite only)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !\.[A-Za-z0-9]{1,5}$
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+?)/?$ $1.html [L]
+
+# 7) Security hardening
+<FilesMatch "\.(bak|swp|tmp|orig)$">
+  Require all denied
+</FilesMatch>
+<Files ~ "^\.">
+  Require all denied
+</Files>
+
+# 8) Custom 404
+ErrorDocument 404 /404.html
+
+# 9) Security headers and CSP allowlist
+<IfModule mod_headers.c>
+  # Remove any global report-only CSP that conflicts and generates noise
+  Header always unset Content-Security-Policy-Report-Only
+
+  # Allow only what the site needs. Keep tight and explicit.
+  Header always set Content-Security-Policy "\
+    default-src 'self'; \
+    script-src 'self' 'unsafe-inline' data: https://static.cloudflareinsights.com; \
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
+    img-src 'self' data: blob:; \
+    font-src 'self' https://fonts.gstatic.com; \
+    connect-src 'self'; \
+    base-uri 'self'; \
+    form-action 'self'; \
+    frame-ancestors 'self'; \
+    upgrade-insecure-requests"
+
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Avoid caching for root index during updates
+<Files index.html>
+<IfModule mod_headers.c>
+  Header set Cache-Control no-cache, no-store, must-revalidate
+  Header set Pragma no-cache
+  Header set Expires 0
+</IfModule>
+</Files>
+
