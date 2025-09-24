@@ -29,7 +29,7 @@ function fixIconLinks(html) {
   next = next.replace(/<link[^>]+rel=(["'])mask-icon\1[^>]*>\s*/gi, '');
 
   // Reuse the stamped manifest hash as a cache-busting version for icons
-  const m = next.match(/href=(["'])\/site-([A-Za-z0-9._-]+)\.webmanifest\1/i);
+  const m = next.match(/href=(["'])\/(?:assets\/)?site-([A-Za-z0-9._-]+)\.webmanifest\1/i);
   const ver = m ? m[2] : '';
   const withVer = (u) => (ver ? `${u}?v=${ver}` : u);
 
@@ -59,4 +59,3 @@ async function main(){
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
-
