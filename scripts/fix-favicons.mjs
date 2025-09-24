@@ -20,7 +20,7 @@ async function* walk(dir) {
   }
 }
 
-function fixIconLinks(html) {
+function fixIconLinks(html, fileSlug) {
   let next = html;
   // Remove any existing icon-related tags to avoid conflicts and ordering issues
   next = next.replace(/<link[^>]+rel=(["'])icon\1[^>]*>\s*/gi, '');
@@ -31,7 +31,8 @@ function fixIconLinks(html) {
   // Reuse the stamped manifest hash as a cache-busting version for icons
   const m = next.match(/href=(["'])\/(?:assets\/)?site-([A-Za-z0-9._-]+)\.webmanifest\1/i);
   const ver = m ? m[2] : '';
-  const withVer = (u) => (ver ? `${u}?v=${ver}` : u);
+  const suffix = [ver, fileSlug].filter(Boolean).join('-');
+  const withVer = (u) => (suffix ? `${u}${u.includes('?') ? '&' : '?'}v=${suffix}` : u);
 
   // Insert in a compatibility-first order (PNG -> ICO -> SVG -> Apple -> Mask)
   const inject = (tag) => { next = next.replace(/<\/head>/i, (x) => `  ${tag}\n${x}`); };
@@ -48,7 +49,9 @@ async function main(){
   let changed = 0;
   for await (const file of walk(root)) {
     const src = await fs.readFile(file, 'utf8');
-    const next = fixIconLinks(src);
+    const relPath = path.relative(root, file).replace(/\\/g, '/');
+    const slug = relPath.replace(/\.html$/i, '').replace(/[^A-Za-z0-9.-]+/g, '-');
+    const next = fixIconLinks(src, slug);
     if (next !== src) {
       await fs.writeFile(file, next, 'utf8');
       changed++;
